@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.env
+.venv/
+venv/
+dist/
+build/
+.DS_Store
+
+# Data cache — contains fetched filings, don't commit
+data/cache/
+data/samples/
+
+# Database
+*.db
+*.sqlite
+
+# HuggingFace model cache
+.cache/
+
+# Streamlit
+.streamlit/secrets.toml
