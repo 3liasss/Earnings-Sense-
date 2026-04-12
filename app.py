@@ -67,18 +67,24 @@ INDEX_FILE  = SAMPLES_DIR / "index.json"
 
 @st.cache_data
 def load_index() -> list[dict]:
+    if not INDEX_FILE.exists():
+        return []
     with open(INDEX_FILE) as f:
         return json.load(f)
 
 @st.cache_data
-def load_sample(filename: str) -> dict:
-    with open(SAMPLES_DIR / filename) as f:
+def load_sample(filename: str) -> dict | None:
+    path = SAMPLES_DIR / filename
+    if not path.exists():
+        return None
+    with open(path) as f:
         return json.load(f)
 
 @st.cache_data
 def load_all_samples() -> list[dict]:
     index = load_index()
-    return [load_sample(entry["file"]) for entry in index]
+    samples = [load_sample(entry["file"]) for entry in index]
+    return [s for s in samples if s is not None]
 
 
 # ── Live analysis helper ──────────────────────────────────────────────────────
@@ -153,11 +159,16 @@ with st.sidebar:
     st.image("https://img.shields.io/badge/EarningsSense-AI%20Earnings%20Intelligence-3b82f6?style=for-the-badge", use_container_width=True)
     st.markdown("---")
 
-    st.markdown("### Select a Company")
     index = load_index()
-    options = {f"{e['ticker']} — {e['quarter']}": e["file"] for e in index}
-    selected_label = st.selectbox("Pre-analyzed samples:", list(options.keys()), index=0)
-    selected_file  = options[selected_label]
+    has_samples = len(index) > 0
+
+    if has_samples:
+        st.markdown("### Select a Company")
+        options = {f"{e['ticker']} — {e['quarter']}": e["file"] for e in index}
+        selected_label = st.selectbox("Pre-analyzed samples:", list(options.keys()), index=0)
+        selected_file  = options[selected_label]
+    else:
+        selected_file = None
 
     st.markdown("---")
     st.markdown("### Live Analysis")
@@ -186,14 +197,27 @@ data: dict | None = None
 
 if run_live and live_ticker:
     data = run_live_analysis(live_ticker)
-    if data is None:
+    if data is None and selected_file:
         st.warning("Live analysis failed. Falling back to sample data.")
         data = load_sample(selected_file)
-else:
+elif selected_file:
     data = load_sample(selected_file)
 
 if data is None:
-    st.error("Could not load data.")
+    # No sample data and no live analysis yet — show welcome screen
+    st.markdown("""
+    ## Welcome to EarningsSense
+
+    Use the **Live Analysis** page in the sidebar to analyze any public company's latest 10-Q filing in real time.
+
+    Or use the **Market Scan** page to auto-rank the top 10 S&P 500 names by Deception Risk Score.
+
+    **How it works:**
+    1. Enter a ticker symbol (e.g. `META`, `NVDA`, `MSFT`)
+    2. EarningsSense fetches the latest SEC EDGAR 10-Q filing automatically
+    3. FinBERT + Loughran-McDonald linguistic analysis runs in ~30 seconds
+    4. You get MCI, DRS, and forward guidance scores with post-earnings return data
+    """)
     st.stop()
 
 # Unpack
@@ -443,7 +467,7 @@ st.markdown("---")
 st.markdown("""
 <div style='text-align:center; color:#334155; font-size:0.8rem; padding:1rem 0;'>
 EarningsSense · Open-source alternative data platform ·
-Built with FinBERT, SEC EDGAR, yfinance, Streamlit, Plotly
+Built with FinBERT, SEC EDGAR, Yahoo Finance, Streamlit, Plotly
 <br>
 Academic references: Araci (2019) · Loughran & McDonald (2011) · Li (2010) · Rogers et al. (2011)
 </div>
