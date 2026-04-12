@@ -210,6 +210,28 @@ if data is None:
 
     st.markdown("---")
 
+    # Q3 2025 verified results table
+    st.markdown("#### Q3 2025 results — MCI/DRS computed from live EDGAR filings, returns verified against market data")
+    st.markdown("<div style='color:#64748b;font-size:.78rem;margin-bottom:.6rem;'>Next-day returns are close-to-close from earnings report date to following trading session, verified via stockanalysis.com. MCI/DRS are model outputs — reproduce by running Live Analysis on any ticker.</div>", unsafe_allow_html=True)
+    Q3_DATA = [
+        {"Company": "GOOGL", "MCI": 43.6, "DRS": 16.5, "Hedge / 100w": 1.22, "Next-day return": "+2.7%"},
+        {"Company": "MSFT",  "MCI": 42.8, "DRS":  2.2, "Hedge / 100w": 0.13, "Next-day return": "-2.9%"},
+        {"Company": "AMZN",  "MCI": 41.4, "DRS": 10.1, "Hedge / 100w": 0.21, "Next-day return": "+9.6%"},
+        {"Company": "AAPL",  "MCI": 38.9, "DRS":  6.6, "Hedge / 100w": 0.06, "Next-day return": "-0.4%"},
+        {"Company": "NVDA",  "MCI": 37.9, "DRS":  9.9, "Hedge / 100w": 0.27, "Next-day return": "-3.1%"},
+        {"Company": "TSLA",  "MCI": 36.5, "DRS":  8.7, "Hedge / 100w": 0.49, "Next-day return": "+2.3%"},
+        {"Company": "META",  "MCI": 23.0, "DRS": 34.8, "Hedge / 100w": 2.88, "Next-day return": "-11.3%"},
+    ]
+    import pandas as pd
+    df = pd.DataFrame(Q3_DATA)
+    st.dataframe(
+        df.style.format({"MCI": "{:.1f}", "DRS": "{:.1f}", "Hedge / 100w": "{:.2f}"}),
+        width="stretch",
+        hide_index=True,
+    )
+
+    st.markdown("---")
+
     # Filing countdown
     st.markdown("#### Upcoming 10-Q filings")
     st.markdown("<div style='color:#64748b;font-size:.82rem;margin-bottom:.75rem;'>Large accelerated filers must file within 40 days of quarter end. Quarter ended March 31 for most — filings due by May 10.</div>", unsafe_allow_html=True)
