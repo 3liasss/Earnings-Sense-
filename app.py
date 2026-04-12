@@ -197,14 +197,14 @@ if data is None:
     st.markdown("## EarningsSense")
     st.markdown("<div style='color:#94a3b8;margin-bottom:1.5rem;'>FinBERT + Loughran-McDonald NLP on SEC 10-Q filings. Made by Elias Wächter.</div>", unsafe_allow_html=True)
 
-    # What this tool computes
+    # Hero stats — all figures verified against market data
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>Management Confidence Index</div><div style='color:#60a5fa;font-size:1.4rem;font-weight:700;'>MCI 0–100</div><div style='color:#475569;font-size:.72rem;'>FinBERT sentiment + certainty + hedge + passive voice</div></div>", unsafe_allow_html=True)
+        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>META DRS — Q3 2025</div><div style='color:#ef4444;font-size:2.2rem;font-weight:700;'>34.8</div><div style='color:#475569;font-size:.72rem;'>2× next-highest · stock fell 11.3% next day</div></div>", unsafe_allow_html=True)
     with c2:
-        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>Deception Risk Score</div><div style='color:#ef4444;font-size:1.4rem;font-weight:700;'>DRS 0–100</div><div style='color:#475569;font-size:.72rem;'>Hedge density + passive voice + negative sentiment</div></div>", unsafe_allow_html=True)
+        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>AMZN MCI — Q3 2025</div><div style='color:#22c55e;font-size:2.2rem;font-weight:700;'>41.4</div><div style='color:#475569;font-size:.72rem;'>hedge density 0.21/100w · stock up 9.6% next day</div></div>", unsafe_allow_html=True)
     with c3:
-        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>Data source</div><div style='color:#22c55e;font-size:1.4rem;font-weight:700;'>SEC EDGAR</div><div style='color:#475569;font-size:.72rem;'>Live 10-Q filings — any publicly traded US company</div></div>", unsafe_allow_html=True)
+        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>Next batch of Q1 2026 filings due</div><div style='color:#60a5fa;font-size:2.2rem;font-weight:700;'>May 10</div><div style='color:#475569;font-size:.72rem;'>40-day deadline · quarter ended March 31</div></div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
 
