@@ -14,9 +14,9 @@ Hedge funds run NLP on earnings transcripts before the market opens. Services li
 
 Pulls the MD&A section from any company's latest 10-Q on SEC EDGAR (free, no API key), runs two analyses, and produces two scores:
 
-**Management Confidence Index (MCI, 0-100)** — how direct and confident management language sounds. Combines FinBERT sentiment with certainty ratio and hedge density.
+**Management Confidence Index (MCI, 0-100)** - how direct and confident management language sounds. Combines FinBERT sentiment with certainty ratio and hedge density.
 
-**Deception Risk Score (DRS, 0-100)** — risk signal for evasive or overly hedged language. High DRS means management is hedging heavily.
+**Deception Risk Score (DRS, 0-100)** - risk signal for evasive or overly hedged language. High DRS means management is hedging heavily.
 
 ```
 SEC EDGAR 10-Q  -->  FinBERT transformer  -->  Management Confidence Index
@@ -48,11 +48,11 @@ Scores computed by running the pipeline on actual SEC EDGAR 10-Q filings. Return
 | TSLA | 36.5 | 8.7 | 0.49 / 100w | +2.3% |
 | **META** | **23.0** | **34.8** | **2.88 / 100w** | **-11.3%** |
 
-META's DRS was 34.8 — more than 2x the next-highest company. Hedge density of 2.88 per 100 words vs an average of 0.48 for the rest. The filing was loaded with "subject to", "we believe", "may", "uncertain" throughout sections where other filings were direct. The stock dropped 11.3% the following day.
+META's DRS was 34.8 - more than 2x the next-highest company. Hedge density of 2.88 per 100 words vs an average of 0.48 for the rest. The filing was loaded with "subject to", "we believe", "may", "uncertain" throughout sections where other filings were direct. The stock dropped 11.3% the following day.
 
 The same pattern appeared in Q3 2024: META's DRS was 34.8 again, and it dropped 4.1%.
 
-### MCI vs next-day return — across both quarters
+### MCI vs next-day return - across both quarters
 
 ![MCI vs Returns](assets/mci_vs_returns.png)
 
@@ -64,10 +64,10 @@ Pearson r = **+0.783** across 7 companies x 2 quarters (n=14 observations).
 
 | Signal | What it measures |
 |--------|-----------------|
-| Hedge density | Hedging phrases per 100 words — "we believe", "may", "subject to", "approximately" |
-| Certainty ratio | Strong affirmatives / (hedges + 1) — "will deliver", "committed", "record" |
-| Passive voice ratio | Fraction of sentences in passive voice — accountability-avoidance signal |
-| Vague language score | Vague terms per 100 words — "various", "significant", "certain ongoing challenges" |
+| Hedge density | Hedging phrases per 100 words - "we believe", "may", "subject to", "approximately" |
+| Certainty ratio | Strong affirmatives / (hedges + 1) - "will deliver", "committed", "record" |
+| Passive voice ratio | Fraction of sentences in passive voice - accountability-avoidance signal |
+| Vague language score | Vague terms per 100 words - "various", "significant", "certain ongoing challenges" |
 | FinBERT sentiment | Positive / negative / neutral from BERT fine-tuned on 10,000+ financial documents |
 
 Academic basis: Loughran & McDonald (2011) *Journal of Finance*, Li (2010) *Journal of Accounting Research*, Araci (2019) *arXiv:1908.10063*
@@ -79,7 +79,7 @@ Academic basis: Loughran & McDonald (2011) *Journal of Finance*, Li (2010) *Jour
 | Layer | Technology |
 |---|---|
 | Language model | ProsusAI/finbert (HuggingFace Transformers + PyTorch) |
-| Filing data | SEC EDGAR REST API — free, no key required |
+| Filing data | SEC EDGAR REST API - free, no key required |
 | Price data | Yahoo Finance HTTP API |
 | Dashboard | Streamlit |
 | Charts | Plotly (dark theme, interactive) |
@@ -118,7 +118,7 @@ Read this before drawing any conclusions:
 
 - n is small. The backtest covers 7 companies across 2 quarters. Pearson r of 0.78 on n=14 is not statistically significant. More data needed before making any trading claims.
 
-- FinBERT reads 10-Q filings, not earnings call transcripts. 10-Qs are more legalistic than calls. The model tends toward neutral — the linguistic signals carry more weight than raw sentiment scores here.
+- FinBERT reads 10-Q filings, not earnings call transcripts. 10-Qs are more legalistic than calls. The model tends toward neutral - the linguistic signals carry more weight than raw sentiment scores here.
 
 - Language is not fundamentals. MSFT had the highest MCI in Q3 2024 and still dropped 6% because Azure guidance missed. Confident language does not save a stock when the numbers disappoint.
 
