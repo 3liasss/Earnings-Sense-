@@ -196,3 +196,63 @@ if results:
             <div style='color:#64748b;font-size:.75rem;margin-top:.3rem;'>Filed {best['filing_date']}</div>
         </div>
         """, unsafe_allow_html=True)
+
+# ── Sector overlay ────────────────────────────────────────────────────────────
+
+st.markdown("---")
+st.markdown("### Sector breakdown")
+st.markdown("<div style='color:#94a3b8;font-size:.82rem;margin-bottom:.75rem;'>Average MCI and DRS by GICS sector across scanned tickers. Highlights whether risk is company-specific or sector-wide.</div>", unsafe_allow_html=True)
+
+from src.data.sectors import get_sector
+from collections import defaultdict
+
+sector_groups: dict[str, list] = defaultdict(list)
+for r in results:
+    sector = get_sector(r["ticker"])
+    sector_groups[sector].append(r)
+
+sector_summary = []
+for sector, members in sector_groups.items():
+    sector_summary.append({
+        "sector":    sector,
+        "tickers":   ", ".join(m["ticker"] for m in members),
+        "count":     len(members),
+        "avg_mci":   sum(m["mci"] for m in members) / len(members),
+        "avg_drs":   sum(m["drs"] for m in members) / len(members),
+        "avg_hedge": sum(m["hedge"] for m in members) / len(members),
+        "max_drs":   max(m["drs"] for m in members),
+        "members":   members,
+    })
+
+sector_summary.sort(key=lambda x: -x["avg_drs"])
+
+# Header row
+sh1, sh2, sh3, sh4, sh5, sh6 = st.columns([2.5, 3, 0.8, 0.8, 0.8, 0.8])
+for col, label in zip([sh1, sh2, sh3, sh4, sh5, sh6], ["Sector", "Tickers", "Count", "Avg MCI", "Avg DRS", "Max DRS"]):
+    col.markdown(f"<div style='color:#475569;font-size:.72rem;font-weight:600;text-transform:uppercase;'>{label}</div>", unsafe_allow_html=True)
+st.markdown("<hr style='margin:.25rem 0 .5rem;border-color:#1e293b;'>", unsafe_allow_html=True)
+
+for s in sector_summary:
+    mci_color = "#22c55e" if s["avg_mci"] >= 50 else ("#f97316" if s["avg_mci"] >= 38 else "#ef4444")
+    drs_color = "#ef4444" if s["avg_drs"] >= 25 else ("#f97316" if s["avg_drs"] >= 15 else "#22c55e")
+    max_color = "#ef4444" if s["max_drs"] >= 25 else ("#f97316" if s["max_drs"] >= 15 else "#22c55e")
+
+    sc1, sc2, sc3, sc4, sc5, sc6 = st.columns([2.5, 3, 0.8, 0.8, 0.8, 0.8])
+    sc1.markdown(f"<span style='color:#e2e8f0;font-weight:600;font-size:.88rem;'>{s['sector']}</span>", unsafe_allow_html=True)
+    sc2.markdown(f"<span style='color:#64748b;font-size:.82rem;'>{s['tickers']}</span>", unsafe_allow_html=True)
+    sc3.markdown(f"<span style='color:#475569;font-size:.82rem;'>{s['count']}</span>", unsafe_allow_html=True)
+    sc4.markdown(f"<span style='color:{mci_color};font-weight:700;'>{s['avg_mci']:.1f}</span>", unsafe_allow_html=True)
+    sc5.markdown(f"<span style='color:{drs_color};font-weight:700;'>{s['avg_drs']:.1f}</span>", unsafe_allow_html=True)
+    sc6.markdown(f"<span style='color:{max_color};font-weight:700;'>{s['max_drs']:.1f}</span>", unsafe_allow_html=True)
+
+if sector_summary:
+    top_sector = sector_summary[0]
+    if top_sector["avg_drs"] >= 15:
+        st.markdown(
+            f"<div style='background:#450a0a22;border-left:3px solid #ef4444;padding:.6rem 1rem;border-radius:4px;color:#cbd5e1;font-size:.82rem;margin-top:.75rem;'>"
+            f"<strong style='color:#ef4444;'>{top_sector['sector']}</strong> has the highest avg DRS at "
+            f"<strong>{top_sector['avg_drs']:.1f}</strong> across {top_sector['count']} ticker(s) - "
+            f"{top_sector['tickers']}. May indicate sector-wide hedging rather than company-specific risk."
+            f"</div>",
+            unsafe_allow_html=True,
+        )

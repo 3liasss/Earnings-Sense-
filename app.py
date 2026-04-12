@@ -204,20 +204,87 @@ elif selected_file:
     data = load_sample(selected_file)
 
 if data is None:
-    # No sample data and no live analysis yet - show welcome screen
-    st.markdown("""
-    ## Welcome to EarningsSense
+    # ── Landing page ──────────────────────────────────────────────────────────
+    st.markdown("## EarningsSense")
+    st.markdown("<div style='color:#94a3b8;margin-bottom:1.5rem;'>FinBERT + Loughran-McDonald NLP on SEC 10-Q filings. Made by Elias Wächter.</div>", unsafe_allow_html=True)
 
-    Use the **Live Analysis** page in the sidebar to analyze any public company's latest 10-Q filing in real time.
+    # Hero stats
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>Pearson r — MCI vs return</div><div style='color:#60a5fa;font-size:2.2rem;font-weight:700;'>+0.783</div><div style='color:#475569;font-size:.72rem;'>n=14 (7 companies × 2 quarters)</div></div>", unsafe_allow_html=True)
+    with c2:
+        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>META DRS — Q3 2025</div><div style='color:#ef4444;font-size:2.2rem;font-weight:700;'>34.8</div><div style='color:#475569;font-size:.72rem;'>2x next-highest — stock fell 11.3%</div></div>", unsafe_allow_html=True)
+    with c3:
+        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>Next batch of filings due</div><div style='color:#22c55e;font-size:2.2rem;font-weight:700;'>May 10</div><div style='color:#475569;font-size:.72rem;'>8 of 10 default tickers — Q1 2026</div></div>", unsafe_allow_html=True)
 
-    Or use the **Market Scan** page to auto-rank the top 10 S&P 500 names by Deception Risk Score.
+    st.markdown("<br>", unsafe_allow_html=True)
 
-    **How it works:**
-    1. Enter a ticker symbol (e.g. `META`, `NVDA`, `MSFT`)
-    2. EarningsSense fetches the latest SEC EDGAR 10-Q filing automatically
-    3. FinBERT + Loughran-McDonald linguistic analysis runs in ~30 seconds
-    4. You get MCI, DRS, and forward guidance scores with post-earnings return data
-    """)
+    # Correlation chart
+    if Path("assets/mci_vs_returns.png").exists():
+        col_chart, col_info2 = st.columns([2, 1])
+        with col_chart:
+            st.image("assets/mci_vs_returns.png", use_container_width=True)
+        with col_info2:
+            st.markdown("#### What this shows")
+            st.markdown("""
+Each dot is one company's MCI score vs next-day stock return after the 10-Q filing.
+
+Higher MCI = more direct, confident management language. The trend line (TSLA excluded as structural outlier) shows the correlation holds across sectors and quarters.
+
+The same META signal appeared twice: DRS 34.8 in Q3 2024 (fell 4.1%) and DRS 34.8 in Q3 2025 (fell 11.3%).
+            """)
+
+    st.markdown("---")
+
+    # Q3 2025 results table
+    st.markdown("#### Q3 2025 results — computed on live EDGAR filings")
+    Q3_DATA = [
+        {"Company": "GOOGL", "MCI": 43.6, "DRS": 16.5, "Hedge / 100w": 1.22, "Next-day return": "+2.5%"},
+        {"Company": "MSFT",  "MCI": 42.8, "DRS":  2.2, "Hedge / 100w": 0.13, "Next-day return": "-0.7%"},
+        {"Company": "AMZN",  "MCI": 41.4, "DRS": 10.1, "Hedge / 100w": 0.21, "Next-day return": "+9.6%"},
+        {"Company": "AAPL",  "MCI": 38.9, "DRS":  6.6, "Hedge / 100w": 0.06, "Next-day return": "-0.7%"},
+        {"Company": "NVDA",  "MCI": 37.9, "DRS":  9.9, "Hedge / 100w": 0.27, "Next-day return": "-3.1%"},
+        {"Company": "TSLA",  "MCI": 36.5, "DRS":  8.7, "Hedge / 100w": 0.49, "Next-day return": "+2.3%"},
+        {"Company": "META",  "MCI": 23.0, "DRS": 34.8, "Hedge / 100w": 2.88, "Next-day return": "-11.3%"},
+    ]
+    import pandas as pd
+    df = pd.DataFrame(Q3_DATA)
+    st.dataframe(
+        df.style.background_gradient(subset=["MCI"], cmap="RdYlGn", vmin=0, vmax=100)
+               .background_gradient(subset=["DRS"], cmap="RdYlGn_r", vmin=0, vmax=40)
+               .format({"MCI": "{:.1f}", "DRS": "{:.1f}", "Hedge / 100w": "{:.2f}"}),
+        use_container_width=True,
+        hide_index=True,
+    )
+
+    st.markdown("---")
+
+    # Filing countdown
+    st.markdown("#### Upcoming 10-Q filings")
+    st.markdown("<div style='color:#64748b;font-size:.82rem;margin-bottom:.75rem;'>Large accelerated filers must file within 40 days of quarter end. Quarter ended March 31 for most — filings due by May 10.</div>", unsafe_allow_html=True)
+
+    from src.data.filing_calendar import get_all_upcoming
+    DEFAULT_TICKERS_LAND = ["NVDA", "MSFT", "META", "AMZN", "GOOGL", "AAPL", "TSLA", "NFLX", "AMD", "ORCL"]
+    upcoming = get_all_upcoming(DEFAULT_TICKERS_LAND)
+
+    fc1, fc2 = st.columns(2)
+    cols_cycle = [fc1, fc2]
+    for i, r in enumerate(upcoming):
+        col = cols_cycle[i % 2]
+        status_color = {"IMMINENT": "#ef4444", "THIS MONTH": "#f97316", "UPCOMING": "#60a5fa", "OVERDUE": "#6b7280"}.get(r["status"], "#94a3b8")
+        window_note = " - quarter ended, in filing window" if r["in_window"] else ""
+        with col:
+            st.markdown(
+                f"<div style='background:#1e293b;border:1px solid #334155;border-radius:8px;padding:.6rem 1rem;margin-bottom:.4rem;display:flex;justify-content:space-between;align-items:center;'>"
+                f"<div><span style='font-weight:700;color:#e2e8f0;'>{r['ticker']}</span>"
+                f"<span style='color:#475569;font-size:.75rem;margin-left:.5rem;'>due {r['filing_due'].strftime('%b %d')}{window_note}</span></div>"
+                f"<span style='color:{status_color};font-size:.78rem;font-weight:600;'>{r['days_to_due']}d</span>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+
+    st.markdown("<br>", unsafe_allow_html=True)
+    st.info("Use **Live Analysis** in the sidebar to score any ticker, or **Market Scan** to rank the full default watchlist.")
     st.stop()
 
 # Unpack
