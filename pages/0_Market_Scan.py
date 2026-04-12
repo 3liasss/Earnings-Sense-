@@ -12,7 +12,6 @@ import streamlit as st
 
 st.set_page_config(
     page_title="Market Scan — EarningsSense",
-    page_icon="📡",
     layout="wide",
 )
 
@@ -31,7 +30,7 @@ h1,h2,h3 { color: #f1f5f9 !important; }
 </style>
 """, unsafe_allow_html=True)
 
-st.title("📡 Market Scan")
+st.title("Market Scan")
 st.markdown("<div style='color:#94a3b8;margin-bottom:1.5rem;'>Latest 10-Q filings fetched live from SEC EDGAR and scored automatically. Ranked by Deception Risk Score — highest risk at top.</div>", unsafe_allow_html=True)
 
 # ── Default ticker universe ───────────────────────────────────────────────────
@@ -148,9 +147,9 @@ for r in results:
     drs_color = "#ef4444" if r["drs"] >= 25 else ("#f97316" if r["drs"] >= 15 else "#22c55e")
     risk_badge = ""
     if r["drs"] >= 25:
-        risk_badge = " 🚨"
+        risk_badge = " [HIGH RISK]"
     elif r["mci"] >= 50:
-        risk_badge = " ✅"
+        risk_badge = " [CONFIDENT]"
 
     c1, c2, c3, c4, c5, c6, c7, c8 = st.columns([1.2, 2.5, 1, 1, 1, 1, 1, 1.5])
     c1.markdown(f"**{r['ticker']}**{risk_badge}")
@@ -179,7 +178,7 @@ if results:
     with col_w:
         st.markdown(f"""
         <div style='background:#450a0a22;border:1px solid #ef444455;border-radius:12px;padding:1rem 1.25rem;'>
-            <div style='color:#ef4444;font-size:.72rem;font-weight:700;text-transform:uppercase;margin-bottom:.4rem;'>⚠ Highest Risk</div>
+            <div style='color:#ef4444;font-size:.72rem;font-weight:700;text-transform:uppercase;margin-bottom:.4rem;'>Highest Risk</div>
             <div style='font-size:1.4rem;font-weight:700;'>{worst['ticker']}</div>
             <div style='color:#94a3b8;font-size:.82rem;margin-bottom:.5rem;'>{worst['company']}</div>
             <div style='color:#f87171;font-size:.85rem;'>DRS {worst['drs']:.0f} · Hedge density {worst['hedge']:.2f}/100w · Certainty {worst['certainty']:.2f}</div>
@@ -189,7 +188,7 @@ if results:
     with col_b:
         st.markdown(f"""
         <div style='background:#14532d22;border:1px solid #22c55e55;border-radius:12px;padding:1rem 1.25rem;'>
-            <div style='color:#22c55e;font-size:.72rem;font-weight:700;text-transform:uppercase;margin-bottom:.4rem;'>✓ Most Confident</div>
+            <div style='color:#22c55e;font-size:.72rem;font-weight:700;text-transform:uppercase;margin-bottom:.4rem;'>Most Confident</div>
             <div style='font-size:1.4rem;font-weight:700;'>{best['ticker']}</div>
             <div style='color:#94a3b8;font-size:.82rem;margin-bottom:.5rem;'>{best['company']}</div>
             <div style='color:#4ade80;font-size:.85rem;'>MCI {best['mci']:.0f} · Hedge density {best['hedge']:.2f}/100w · Certainty {best['certainty']:.2f}</div>

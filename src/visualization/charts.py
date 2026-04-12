@@ -342,7 +342,7 @@ def backtest_scatter(samples: list[dict], pearson_r: float, p_value: float) -> g
         ),
     ))
 
-    sig_text = "p < 0.05 ✓" if p_value < 0.05 else f"p = {p_value:.3f}"
+    sig_text = "p < 0.05 (sig)" if p_value < 0.05 else f"p = {p_value:.3f}"
     fig.update_layout(
         height=400,
         xaxis=dict(

@@ -13,7 +13,6 @@ import streamlit as st
 
 st.set_page_config(
     page_title="Live Analysis — EarningsSense",
-    page_icon="🔍",
     layout="wide",
 )
 
@@ -28,7 +27,7 @@ h1,h2,h3 { color: #f1f5f9 !important; }
 </style>
 """, unsafe_allow_html=True)
 
-st.title("🔍 Live Analysis")
+st.title("Live Analysis")
 st.markdown("<div style='color:#94a3b8;margin-bottom:1.5rem;'>Enter any S&P 500 ticker to fetch the latest SEC 10-Q and score management language in real time.</div>", unsafe_allow_html=True)
 
 # ── Sample mode fallback ───────────────────────────────────────────────────────

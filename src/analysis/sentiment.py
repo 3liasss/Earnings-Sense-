@@ -43,7 +43,7 @@ def _get_pipeline():
         _pipeline = hf_pipeline(
             "text-classification",
             model="ProsusAI/finbert",
-            return_all_scores=True,
+            top_k=None,
             device=-1,          # CPU; set device=0 for GPU
             truncation=True,
         )

@@ -26,7 +26,6 @@ import streamlit as st
 
 st.set_page_config(
     page_title="EarningsSense — AI Earnings Intelligence",
-    page_icon="📊",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -246,7 +245,7 @@ from src.analysis.signals import backtest as run_backtest
 # ── Header ────────────────────────────────────────────────────────────────────
 
 st.markdown(
-    f"## 📊 EarningsSense &nbsp;&nbsp;"
+    f"## EarningsSense &nbsp;&nbsp;"
     f"<span style='font-size:1rem; color:#94a3b8; font-weight:400;'>"
     f"AI Earnings Intelligence</span>",
     unsafe_allow_html=True,
