@@ -66,6 +66,7 @@ class LinguisticFeatures:
     passive_voice_ratio: float  # fraction of sentences that are passive
     vague_language_score: float # vague terms per 100 words
     word_count: int
+    avg_sentence_length: float = 0.0  # average words per sentence
 
 
 # ── Main function ─────────────────────────────────────────────────────────────
@@ -87,6 +88,7 @@ def extract(text: str) -> LinguisticFeatures:
             passive_voice_ratio=0.0,
             vague_language_score=0.0,
             word_count=0,
+            avg_sentence_length=0.0,
         )
 
     text_lower = text.lower()
@@ -111,10 +113,13 @@ def extract(text: str) -> LinguisticFeatures:
     vague_count = sum(text_lower.count(t) for t in VAGUE_TERMS)
     vague_language_score = (vague_count / word_count) * 100
 
+    avg_sentence_length = word_count / sentence_count
+
     return LinguisticFeatures(
         hedge_density=round(hedge_density, 3),
         certainty_ratio=round(certainty_ratio, 3),
         passive_voice_ratio=round(passive_voice_ratio, 3),
         vague_language_score=round(vague_language_score, 3),
         word_count=word_count,
+        avg_sentence_length=round(avg_sentence_length, 1),
     )

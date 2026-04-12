@@ -220,8 +220,13 @@ def price_impact_chart(price_series: list[dict], earnings_date: str,
     try:
         earn_idx = dates.index(earnings_date)
     except ValueError:
-        # Find nearest date
-        earn_idx = min(range(len(dates)), key=lambda i: abs(dates[i] - earnings_date))
+        # Find nearest date; dates are YYYY-MM-DD strings so numeric comparison works
+        earn_idx = min(
+            range(len(dates)),
+            key=lambda i: abs(
+                int(dates[i].replace("-", "")) - int(earnings_date.replace("-", ""))
+            ),
+        )
 
     pre_dates  = dates[:earn_idx + 1]
     post_dates = dates[earn_idx:]

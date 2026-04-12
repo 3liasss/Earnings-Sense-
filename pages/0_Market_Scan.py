@@ -47,7 +47,7 @@ with st.sidebar:
         label_visibility="collapsed",
     )
     tickers = [t.strip().upper() for t in custom.replace(",", "\n").splitlines() if t.strip()]
-    run_scan = st.button("Run Scan", type="primary", use_container_width=True)
+    run_scan = st.button("Run Scan", type="primary")
     st.markdown("---")
     st.markdown("<div style='color:#475569;font-size:0.75rem;'>Each ticker fetches the most recent 10-Q from SEC EDGAR, extracts the MD&A section, and runs FinBERT + Loughran-McDonald analysis.</div>", unsafe_allow_html=True)
 

@@ -58,7 +58,7 @@ with col_input:
         label_visibility="collapsed",
     )
 with col_btn:
-    run_btn = st.button("Analyze →", type="primary", use_container_width=True)
+    run_btn = st.button("Analyze →", type="primary")
 
 st.markdown("<div style='color:#475569;font-size:0.78rem;margin-top:-0.5rem;margin-bottom:1rem;'>Fetches the latest SEC EDGAR 10-Q filing automatically - any publicly traded US company.</div>", unsafe_allow_html=True)
 
@@ -203,9 +203,13 @@ if run_btn and ticker_input:
     # Gauges + sentiment
     col_g, col_s = st.columns([1, 1])
     with col_g:
-        st.plotly_chart(confidence_gauges(result), use_container_width=True)
+        st.plotly_chart(confidence_gauges(mci, drs), width="stretch")
     with col_s:
-        st.plotly_chart(sentiment_bar(result), use_container_width=True)
+        sent = result["sentiment"]
+        st.plotly_chart(
+            sentiment_bar(sent["positive"], sent["negative"], sent["neutral"], result["ticker"]),
+            width="stretch",
+        )
 
     # Guidance key phrases
     kp = result.get("guidance", {}).get("key_phrases", [])
@@ -215,12 +219,27 @@ if run_btn and ticker_input:
             st.markdown(f"<div style='background:#1e293b;border-left:3px solid #a78bfa;padding:.6rem 1rem;border-radius:4px;color:#cbd5e1;font-size:.85rem;margin-bottom:.4rem;font-style:italic;'>\"{phrase}\"</div>", unsafe_allow_html=True)
 
     # Linguistic radar + price impact
+    ling = result["linguistics"]
     col_r, col_p = st.columns([1, 1])
     with col_r:
-        st.plotly_chart(linguistic_radar(result), use_container_width=True)
+        st.plotly_chart(
+            linguistic_radar(
+                ling["hedge_density"],
+                ling["certainty_ratio"],
+                ling["passive_voice_ratio"],
+                ling["vague_language_score"],
+            ),
+            width="stretch",
+        )
     with col_p:
-        if result.get("price_impact"):
-            st.plotly_chart(price_impact_chart(result), use_container_width=True)
+        pi = result.get("price_impact", {})
+        price_series = pi.get("price_series", [])
+        earn_date = result.get("earnings_date", "")
+        if price_series and earn_date:
+            st.plotly_chart(
+                price_impact_chart(price_series, earn_date, result["ticker"], mci),
+                width="stretch",
+            )
 
     # Raw snippet
     with st.expander("MD&A Text Snippet"):

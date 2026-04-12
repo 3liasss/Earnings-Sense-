@@ -155,7 +155,7 @@ def run_live_analysis(ticker: str) -> dict | None:
 # ── Sidebar ───────────────────────────────────────────────────────────────────
 
 with st.sidebar:
-    st.image("https://img.shields.io/badge/EarningsSense-AI%20Earnings%20Intelligence-3b82f6?style=for-the-badge", use_container_width=True)
+    st.image("https://img.shields.io/badge/EarningsSense-AI%20Earnings%20Intelligence-3b82f6?style=for-the-badge", width="stretch")
     st.markdown("---")
 
     index = load_index()
@@ -168,12 +168,6 @@ with st.sidebar:
         selected_file  = options[selected_label]
     else:
         selected_file = None
-
-    st.markdown("---")
-    st.markdown("### Live Analysis")
-    st.caption("Fetches SEC EDGAR filing + runs FinBERT. Requires internet. First run downloads ~440MB model.")
-    live_ticker = st.text_input("Ticker symbol:", placeholder="e.g. AAPL, MSFT, NVDA").strip().upper()
-    run_live    = st.button("Analyze Live", type="primary", use_container_width=True)
 
     st.markdown("---")
     st.markdown("""
@@ -195,12 +189,7 @@ with st.sidebar:
 
 data: dict | None = None
 
-if run_live and live_ticker:
-    data = run_live_analysis(live_ticker)
-    if data is None and selected_file:
-        st.warning("Live analysis failed. Falling back to sample data.")
-        data = load_sample(selected_file)
-elif selected_file:
+if selected_file:
     data = load_sample(selected_file)
 
 if data is None:
@@ -223,7 +212,7 @@ if data is None:
     if Path("assets/mci_vs_returns.png").exists():
         col_chart, col_info2 = st.columns([2, 1])
         with col_chart:
-            st.image("assets/mci_vs_returns.png", use_container_width=True)
+            st.image("assets/mci_vs_returns.png", width="stretch")
         with col_info2:
             st.markdown("#### What this shows")
             st.markdown("""
@@ -250,10 +239,8 @@ The same META signal appeared twice: DRS 34.8 in Q3 2024 (fell 4.1%) and DRS 34.
     import pandas as pd
     df = pd.DataFrame(Q3_DATA)
     st.dataframe(
-        df.style.background_gradient(subset=["MCI"], cmap="RdYlGn", vmin=0, vmax=100)
-               .background_gradient(subset=["DRS"], cmap="RdYlGn_r", vmin=0, vmax=40)
-               .format({"MCI": "{:.1f}", "DRS": "{:.1f}", "Hedge / 100w": "{:.2f}"}),
-        use_container_width=True,
+        df.style.format({"MCI": "{:.1f}", "DRS": "{:.1f}", "Hedge / 100w": "{:.2f}"}),
+        width="stretch",
         hide_index=True,
     )
 
@@ -351,7 +338,7 @@ col_gauge, col_sent = st.columns([1.2, 1])
 with col_gauge:
     st.plotly_chart(
         confidence_gauges(mci, drs),
-        use_container_width=True,
+        width="stretch",
         config={"displayModeBar": False},
     )
     st.markdown("""
@@ -366,7 +353,7 @@ with col_gauge:
 with col_sent:
     st.plotly_chart(
         sentiment_bar(sent["positive"], sent["negative"], sent["neutral"], ticker),
-        use_container_width=True,
+        width="stretch",
         config={"displayModeBar": False},
     )
 
@@ -392,7 +379,7 @@ with col_radar:
             ling["passive_voice_ratio"],
             ling["vague_language_score"],
         ),
-        use_container_width=True,
+        width="stretch",
         config={"displayModeBar": False},
     )
 
@@ -447,7 +434,7 @@ if price_series and earn_dt:
     with col_price:
         st.plotly_chart(
             price_impact_chart(price_series, earn_dt, ticker, mci),
-            use_container_width=True,
+            width="stretch",
             config={"displayModeBar": False},
         )
 
@@ -496,7 +483,7 @@ col_bt_chart, col_bt_stats = st.columns([2.5, 1])
 with col_bt_chart:
     st.plotly_chart(
         backtest_scatter(all_samples, bt.pearson_r, bt.p_value),
-        use_container_width=True,
+        width="stretch",
         config={"displayModeBar": False},
     )
 
