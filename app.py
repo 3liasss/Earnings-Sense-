@@ -197,37 +197,16 @@ if data is None:
     st.markdown("## EarningsSense")
     st.markdown("<div style='color:#94a3b8;margin-bottom:1.5rem;'>FinBERT + Loughran-McDonald NLP on SEC 10-Q filings. Made by Elias Wächter.</div>", unsafe_allow_html=True)
 
-    # Hero stats
+    # What this tool computes
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>Pearson r — MCI vs return</div><div style='color:#60a5fa;font-size:2.2rem;font-weight:700;'>+0.783</div><div style='color:#475569;font-size:.72rem;'>n=14 (7 companies × 2 quarters)</div></div>", unsafe_allow_html=True)
+        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>Management Confidence Index</div><div style='color:#60a5fa;font-size:1.4rem;font-weight:700;'>MCI 0–100</div><div style='color:#475569;font-size:.72rem;'>FinBERT sentiment + certainty + hedge + passive voice</div></div>", unsafe_allow_html=True)
     with c2:
-        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>META DRS — Q3 2025</div><div style='color:#ef4444;font-size:2.2rem;font-weight:700;'>34.8</div><div style='color:#475569;font-size:.72rem;'>2x next-highest — stock fell 11.3%</div></div>", unsafe_allow_html=True)
+        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>Deception Risk Score</div><div style='color:#ef4444;font-size:1.4rem;font-weight:700;'>DRS 0–100</div><div style='color:#475569;font-size:.72rem;'>Hedge density + passive voice + negative sentiment</div></div>", unsafe_allow_html=True)
     with c3:
-        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>Next batch of filings due</div><div style='color:#22c55e;font-size:2.2rem;font-weight:700;'>May 10</div><div style='color:#475569;font-size:.72rem;'>8 of 10 default tickers — Q1 2026</div></div>", unsafe_allow_html=True)
+        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>Data source</div><div style='color:#22c55e;font-size:1.4rem;font-weight:700;'>SEC EDGAR</div><div style='color:#475569;font-size:.72rem;'>Live 10-Q filings — any publicly traded US company</div></div>", unsafe_allow_html=True)
 
     st.markdown("<br>", unsafe_allow_html=True)
-
-    st.markdown("---")
-
-    # Q3 2025 results table
-    st.markdown("#### Q3 2025 results — computed on live EDGAR filings")
-    Q3_DATA = [
-        {"Company": "GOOGL", "MCI": 43.6, "DRS": 16.5, "Hedge / 100w": 1.22, "Next-day return": "+2.5%"},
-        {"Company": "MSFT",  "MCI": 42.8, "DRS":  2.2, "Hedge / 100w": 0.13, "Next-day return": "-0.7%"},
-        {"Company": "AMZN",  "MCI": 41.4, "DRS": 10.1, "Hedge / 100w": 0.21, "Next-day return": "+9.6%"},
-        {"Company": "AAPL",  "MCI": 38.9, "DRS":  6.6, "Hedge / 100w": 0.06, "Next-day return": "-0.7%"},
-        {"Company": "NVDA",  "MCI": 37.9, "DRS":  9.9, "Hedge / 100w": 0.27, "Next-day return": "-3.1%"},
-        {"Company": "TSLA",  "MCI": 36.5, "DRS":  8.7, "Hedge / 100w": 0.49, "Next-day return": "+2.3%"},
-        {"Company": "META",  "MCI": 23.0, "DRS": 34.8, "Hedge / 100w": 2.88, "Next-day return": "-11.3%"},
-    ]
-    import pandas as pd
-    df = pd.DataFrame(Q3_DATA)
-    st.dataframe(
-        df.style.format({"MCI": "{:.1f}", "DRS": "{:.1f}", "Hedge / 100w": "{:.2f}"}),
-        width="stretch",
-        hide_index=True,
-    )
 
     st.markdown("---")
 
@@ -256,7 +235,7 @@ if data is None:
             )
 
     st.markdown("<br>", unsafe_allow_html=True)
-    st.info("Use **Live Analysis** in the sidebar to score any ticker, or **Market Scan** to rank the full default watchlist.")
+    st.info("Use **Live Analysis** to score any ticker, or **Market Scan** to rank the full default watchlist.")
     st.stop()
 
 # Unpack
@@ -278,9 +257,7 @@ from src.visualization.charts import (
     sentiment_bar,
     linguistic_radar,
     price_impact_chart,
-    backtest_scatter,
 )
-from src.analysis.signals import backtest as run_backtest
 
 # ── Header ────────────────────────────────────────────────────────────────────
 
@@ -449,57 +426,6 @@ if price_series and earn_dt:
                 )
 
     st.markdown("---")
-
-# ── Section 4: Backtest ───────────────────────────────────────────────────────
-
-st.markdown("## Signal Backtest")
-st.markdown(
-    "<div style='font-size:0.85rem; color:#64748b; margin-bottom:1rem;'>"
-    "Does the Management Confidence Index predict next-day stock returns? "
-    "Below is the empirical validation across all 8 pre-analyzed earnings events.</div>",
-    unsafe_allow_html=True,
-)
-
-all_samples = load_all_samples()
-bt = run_backtest(all_samples)
-
-col_bt_chart, col_bt_stats = st.columns([2.5, 1])
-
-with col_bt_chart:
-    st.plotly_chart(
-        backtest_scatter(all_samples, bt.pearson_r, bt.p_value),
-        width="stretch",
-        config={"displayModeBar": False},
-    )
-
-with col_bt_stats:
-    st.markdown("#### Backtest Statistics")
-
-    r_color = "#22c55e" if bt.pearson_r > 0.4 else ("#f97316" if bt.pearson_r > 0.2 else "#ef4444")
-    p_color = "#22c55e" if bt.p_value < 0.05 else "#f97316"
-
-    st.markdown(f"""
-    <div class='metric-card'>
-        <div style='color:#94a3b8; font-size:0.8rem;'>Pearson r</div>
-        <div style='font-size:2rem; font-weight:700; color:{r_color};'>{bt.pearson_r:+.3f}</div>
-    </div>
-    <div class='metric-card'>
-        <div style='color:#94a3b8; font-size:0.8rem;'>p-value</div>
-        <div style='font-size:2rem; font-weight:700; color:{p_color};'>{bt.p_value:.4f}</div>
-    </div>
-    <div class='metric-card'>
-        <div style='color:#94a3b8; font-size:0.8rem;'>Observations</div>
-        <div style='font-size:2rem; font-weight:700; color:#e2e8f0;'>{bt.n_observations}</div>
-    </div>
-    """, unsafe_allow_html=True)
-
-    st.markdown(
-        f"<div style='font-size:0.78rem; color:#64748b; margin-top:0.5rem;'>"
-        f"{bt.interpretation}</div>",
-        unsafe_allow_html=True,
-    )
-
-st.markdown("---")
 
 # ── Footer ─────────────────────────────────────────────────────────────────────
 
