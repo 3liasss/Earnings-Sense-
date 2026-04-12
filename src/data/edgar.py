@@ -2,7 +2,7 @@
 SEC EDGAR data fetcher.
 
 Pulls 10-Q filings (quarterly reports) for a given ticker using the
-free, public EDGAR REST API — no API key required.
+free, public EDGAR REST API - no API key required.
 
 The Management Discussion & Analysis (MD&A) section is extracted as a
 proxy for earnings call language; it contains the same forward-looking
@@ -155,14 +155,14 @@ def _extract_mda(html: str) -> str:
     """
     soup = BeautifulSoup(html, "html.parser")
 
-    # Remove only scripts and styles — keep tables (they contain MD&A text)
+    # Remove only scripts and styles - keep tables (they contain MD&A text)
     for tag in soup(["script", "style"]):
         tag.decompose()
 
     text = soup.get_text(separator=" ", strip=True)
     text = re.sub(r"\s{2,}", " ", text)
 
-    # Find all MD&A section starts — take the LAST one (avoids table-of-contents hit)
+    # Find all MD&A section starts - take the LAST one (avoids table-of-contents hit)
     start_idx = None
     for pattern in _MDA_PATTERNS:
         for m in pattern.finditer(text):

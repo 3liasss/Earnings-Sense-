@@ -1,17 +1,18 @@
 """
-EarningsSense — Market Scan
+EarningsSense - Market Scan
 
 Automatically fetches the latest 10-Q for a default watchlist of mega-cap
 tickers, runs FinBERT + linguistic analysis on each, and ranks them by
-Deception Risk Score. No manual input required — opens ready to read.
+Deception Risk Score. No manual input required - opens ready to read.
 """
 
 from __future__ import annotations
+import html
 import time
 import streamlit as st
 
 st.set_page_config(
-    page_title="Market Scan — EarningsSense",
+    page_title="Market Scan - EarningsSense",
     layout="wide",
 )
 
@@ -31,7 +32,7 @@ h1,h2,h3 { color: #f1f5f9 !important; }
 """, unsafe_allow_html=True)
 
 st.title("Market Scan")
-st.markdown("<div style='color:#94a3b8;margin-bottom:1.5rem;'>Latest 10-Q filings fetched live from SEC EDGAR and scored automatically. Ranked by Deception Risk Score — highest risk at top.</div>", unsafe_allow_html=True)
+st.markdown("<div style='color:#94a3b8;margin-bottom:1.5rem;'>Latest 10-Q filings fetched live from SEC EDGAR and scored automatically. Ranked by Deception Risk Score - highest risk at top.</div>", unsafe_allow_html=True)
 
 # ── Default ticker universe ───────────────────────────────────────────────────
 
@@ -70,7 +71,7 @@ if run_scan or not st.session_state.scan_done:
 
     for i, ticker in enumerate(tickers):
         progress_bar.progress((i) / len(tickers), text=f"Scanning {ticker}… ({i+1}/{len(tickers)})")
-        status_box.markdown(f"<div style='color:#64748b;font-size:.82rem;'>Fetching SEC EDGAR 10-Q for **{ticker}**…</div>", unsafe_allow_html=True)
+        status_box.markdown(f"<div style='color:#64748b;font-size:.82rem;'>Fetching SEC EDGAR 10-Q for <b>{html.escape(ticker)}</b>...</div>", unsafe_allow_html=True)
 
         try:
             filing     = fetch_filing_text(ticker, use_cache=True)
@@ -133,7 +134,7 @@ with c4:
     st.markdown(f"<div style='text-align:center;'><div style='font-size:1.6rem;font-weight:700;color:#22c55e;'>{len(low_risk)}</div><div style='color:#64748b;font-size:.78rem;'>Confident filings (MCI ≥ 50)</div></div>", unsafe_allow_html=True)
 
 st.markdown("---")
-st.markdown("### Results — sorted by Deception Risk Score")
+st.markdown("### Results - sorted by Deception Risk Score")
 
 # Header row
 cols = st.columns([1.2, 2.5, 1, 1, 1, 1, 1, 1.5])
@@ -165,7 +166,7 @@ for r in results:
 if errors:
     with st.expander(f"{len(errors)} ticker(s) failed"):
         for e in errors:
-            st.markdown(f"<div style='color:#ef4444;font-size:.82rem;'>{e['ticker']}: {e['error']}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div style='color:#ef4444;font-size:.82rem;'>{html.escape(e['ticker'])}: {html.escape(str(e['error']))}</div>", unsafe_allow_html=True)
 
 # ── Highlight box ─────────────────────────────────────────────────────────────
 

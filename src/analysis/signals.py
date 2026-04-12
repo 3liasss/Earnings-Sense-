@@ -9,7 +9,7 @@ DRS (0–100): Combines hedging density, passive voice, and negative sentiment.
 Higher = elevated risk of misleading or overly cautious language.
 
 Also provides a backtest engine that correlates MCI with post-earnings
-price movements — the empirical validity test.
+price movements - the empirical validity test.
 """
 
 from __future__ import annotations

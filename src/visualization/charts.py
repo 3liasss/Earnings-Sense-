@@ -47,8 +47,8 @@ def _base_layout(**overrides) -> dict:
 def confidence_gauges(mci: float, drs: float) -> go.Figure:
     """
     Two side-by-side gauge indicators:
-      Left  — Management Confidence Index (0–100, blue, higher is better)
-      Right — Deception Risk Score        (0–100, orange, lower is better)
+      Left  - Management Confidence Index (0–100, blue, higher is better)
+      Right - Deception Risk Score        (0–100, orange, lower is better)
     """
     fig = make_subplots(
         rows=1, cols=2,
@@ -135,7 +135,7 @@ def sentiment_bar(positive: float, negative: float, neutral: float,
         xaxis=dict(range=[0, 100], showgrid=False, showticklabels=False),
         yaxis=dict(showgrid=False, tickfont={"color": COLORS["subtext"]}),
         title={
-            "text": f"FinBERT Sentiment Analysis — {company}",
+            "text": f"FinBERT Sentiment Analysis - {company}",
             "font": {"size": 14, "color": COLORS["subtext"]},
         },
         **_base_layout(),
@@ -279,7 +279,7 @@ def price_impact_chart(price_series: list[dict], earnings_date: str,
         ),
         legend=dict(font={"color": COLORS["text"]}),
         title={
-            "text": f"{ticker} — 30-Day Price Impact Around Earnings",
+            "text": f"{ticker} - 30-Day Price Impact Around Earnings",
             "font": {"size": 14, "color": COLORS["subtext"]},
         },
         **_base_layout(),
@@ -359,7 +359,7 @@ def backtest_scatter(samples: list[dict], pearson_r: float, p_value: float) -> g
         legend=dict(font={"color": COLORS["text"]}),
         title={
             "text": (
-                f"Backtest: MCI vs. Next-Day Return — "
+                f"Backtest: MCI vs. Next-Day Return - "
                 f"Pearson r = {pearson_r:+.3f}, {sig_text}"
             ),
             "font": {"size": 14, "color": COLORS["subtext"]},

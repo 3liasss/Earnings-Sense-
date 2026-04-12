@@ -2,7 +2,7 @@
 Linguistic feature extraction for management language analysis.
 
 Identifies hedging language, certainty signals, passive voice patterns,
-and vague terminology — the same signals quantitative hedge funds pay
+and vague terminology - the same signals quantitative hedge funds pay
 alternative data vendors millions to extract from earnings transcripts.
 
 Academic basis:

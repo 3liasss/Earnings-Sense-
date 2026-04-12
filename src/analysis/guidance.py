@@ -2,7 +2,7 @@
 Forward-looking statement (FLS) extraction and guidance scoring.
 
 Identifies guidance phrases in MD&A text and scores how confident
-management sounds about the future — separate from historical results.
+management sounds about the future - separate from historical results.
 """
 from __future__ import annotations
 

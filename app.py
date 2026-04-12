@@ -1,7 +1,7 @@
 """
-EarningsSense — AI Earnings Intelligence Platform
+EarningsSense - AI Earnings Intelligence Platform
 ==================================================
-Institutional-grade earnings call intelligence — open-source.
+Institutional-grade earnings call intelligence - open-source.
 
 Run:
     streamlit run app.py
@@ -25,7 +25,7 @@ import streamlit as st
 # ── Page config ───────────────────────────────────────────────────────────────
 
 st.set_page_config(
-    page_title="EarningsSense — AI Earnings Intelligence",
+    page_title="EarningsSense - AI Earnings Intelligence",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -163,7 +163,7 @@ with st.sidebar:
 
     if has_samples:
         st.markdown("### Select a Company")
-        options = {f"{e['ticker']} — {e['quarter']}": e["file"] for e in index}
+        options = {f"{e['ticker']} - {e['quarter']}": e["file"] for e in index}
         selected_label = st.selectbox("Pre-analyzed samples:", list(options.keys()), index=0)
         selected_file  = options[selected_label]
     else:
@@ -179,11 +179,12 @@ with st.sidebar:
     st.markdown("""
     **About EarningsSense**
 
-    Institutional-grade earnings intelligence — free and open-source.
+    Institutional-grade earnings intelligence - free and open-source.
+    Made by Elias Wächter.
 
     Models & methods:
     - [FinBERT](https://arxiv.org/abs/1908.10063) (Araci, 2019)
-    - [Loughran-McDonald](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=1549526) word lists
+    - [Loughran-McDonald word lists](https://sraf.nd.edu/loughranmcdonald-master-dictionary/)
     - Hedge language detection (Li, 2010)
 
     Built with Python · Streamlit · Plotly · HuggingFace Transformers
@@ -203,7 +204,7 @@ elif selected_file:
     data = load_sample(selected_file)
 
 if data is None:
-    # No sample data and no live analysis yet — show welcome screen
+    # No sample data and no live analysis yet - show welcome screen
     st.markdown("""
     ## Welcome to EarningsSense
 
@@ -250,7 +251,7 @@ st.markdown(
     f"AI Earnings Intelligence</span>",
     unsafe_allow_html=True,
 )
-st.caption("Institutional NLP analysis of earnings calls — free and open-source.")
+st.caption("Institutional NLP analysis of earnings calls - free and open-source.")
 
 st.markdown("---")
 
@@ -288,9 +289,9 @@ with col_gauge:
     )
     st.markdown("""
     <div style='font-size:0.8rem; color:#64748b; padding: 0.5rem 0;'>
-    <b>MCI</b> — Management Confidence Index: combines FinBERT positive sentiment,
+    <b>MCI</b> - Management Confidence Index: combines FinBERT positive sentiment,
     certainty language density, inverted hedge frequency, and passive voice avoidance.<br><br>
-    <b>DRS</b> — Deception Risk Score: high hedge density + passive voice + negative
+    <b>DRS</b> - Deception Risk Score: high hedge density + passive voice + negative
     sentiment → elevated institutional scrutiny signal.
     </div>
     """, unsafe_allow_html=True)
@@ -465,7 +466,7 @@ st.markdown("---")
 
 st.markdown("""
 <div style='text-align:center; color:#334155; font-size:0.8rem; padding:1rem 0;'>
-EarningsSense · Open-source alternative data platform ·
+EarningsSense · Made by Elias Wächter ·
 Built with FinBERT, SEC EDGAR, Yahoo Finance, Streamlit, Plotly
 <br>
 Academic references: Araci (2019) · Loughran & McDonald (2011) · Li (2010) · Rogers et al. (2011)

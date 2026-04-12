@@ -1,18 +1,19 @@
 """
-EarningsSense — Live Analysis page.
+EarningsSense - Live Analysis page.
 
 Enter any ticker to fetch the latest SEC EDGAR 10-Q filing and run
 MCI/DRS/Guidance scoring in real time.
 """
 
 from __future__ import annotations
+import html
 import json
 from pathlib import Path
 
 import streamlit as st
 
 st.set_page_config(
-    page_title="Live Analysis — EarningsSense",
+    page_title="Live Analysis - EarningsSense",
     layout="wide",
 )
 
@@ -59,7 +60,7 @@ with col_input:
 with col_btn:
     run_btn = st.button("Analyze →", type="primary", use_container_width=True)
 
-st.markdown("<div style='color:#475569;font-size:0.78rem;margin-top:-0.5rem;margin-bottom:1rem;'>Fetches the latest SEC EDGAR 10-Q filing automatically — any publicly traded US company.</div>", unsafe_allow_html=True)
+st.markdown("<div style='color:#475569;font-size:0.78rem;margin-top:-0.5rem;margin-bottom:1rem;'>Fetches the latest SEC EDGAR 10-Q filing automatically - any publicly traded US company.</div>", unsafe_allow_html=True)
 
 if run_btn and ticker_input:
     ticker = ticker_input.strip().upper()
@@ -165,7 +166,7 @@ if run_btn and ticker_input:
     # ── Display results ────────────────────────────────────────────────────────
     from src.visualization.charts import confidence_gauges, sentiment_bar, linguistic_radar, price_impact_chart
 
-    st.markdown(f"## {result['ticker']} — {result.get('company','')}")
+    st.markdown(f"## {result['ticker']} - {result.get('company','')}")
     st.markdown(f"<div style='color:#64748b;font-size:0.85rem;'>{result.get('quarter','')} · {result.get('earnings_date','')} · Sector: {result.get('sector','Unknown')}</div>", unsafe_allow_html=True)
     st.markdown("---")
 
@@ -179,16 +180,16 @@ if run_btn and ticker_input:
     mci_color = "#22c55e" if mci >= 65 else ("#f97316" if mci >= 45 else "#ef4444")
     drs_color = "#ef4444" if drs >= 55 else ("#f97316" if drs >= 35 else "#22c55e")
     with c1:
-        delta_str = f"YoY: {delta_mci:+.1f} pts" if delta_mci is not None else "YoY: —"
+        delta_str = f"YoY: {delta_mci:+.1f} pts" if delta_mci is not None else "YoY: -"
         st.markdown(f"<div class='metric-card'><div style='color:#64748b;font-size:.75rem;'>MCI</div><div style='color:{mci_color};font-size:2.2rem;font-weight:700;'>{mci:.0f}</div><div style='color:#64748b;font-size:.75rem;'>{delta_str}</div></div>", unsafe_allow_html=True)
     with c2:
         st.markdown(f"<div class='metric-card'><div style='color:#64748b;font-size:.75rem;'>DRS</div><div style='color:{drs_color};font-size:2.2rem;font-weight:700;'>{drs:.0f}</div><div style='color:#64748b;font-size:.75rem;'>Deception Risk</div></div>", unsafe_allow_html=True)
     with c3:
-        gs = f"{guidance_score:.0f}" if guidance_score is not None else "—"
+        gs = f"{guidance_score:.0f}" if guidance_score is not None else "-"
         st.markdown(f"<div class='metric-card'><div style='color:#64748b;font-size:.75rem;'>Guidance Score</div><div style='color:#a78bfa;font-size:2.2rem;font-weight:700;'>{gs}</div><div style='color:#64748b;font-size:.75rem;'>Forward confidence</div></div>", unsafe_allow_html=True)
     with c4:
         ret = result.get("price_impact", {}).get("next_day_return")
-        ret_str = f"{ret*100:+.2f}%" if ret is not None else "—"
+        ret_str = f"{ret*100:+.2f}%" if ret is not None else "-"
         ret_color = "#22c55e" if (ret or 0) >= 0 else "#ef4444"
         st.markdown(f"<div class='metric-card'><div style='color:#64748b;font-size:.75rem;'>Next-Day Return</div><div style='color:{ret_color};font-size:2.2rem;font-weight:700;'>{ret_str}</div><div style='color:#64748b;font-size:.75rem;'>Post-filing</div></div>", unsafe_allow_html=True)
 
@@ -197,7 +198,7 @@ if run_btn and ticker_input:
     if yoy_data.get("trend") and yoy_data["trend"] != "no_prior":
         trend_colors = {"improving": "#22c55e", "deteriorating": "#ef4444", "stable": "#60a5fa", "mixed": "#f97316"}
         tc = trend_colors.get(yoy_data["trend"], "#94a3b8")
-        st.markdown(f"<div style='background:{tc}18;border-left:3px solid {tc};padding:.6rem 1rem;border-radius:4px;color:#cbd5e1;font-size:.85rem;margin-bottom:1rem;'><strong style='color:{tc};'>YoY Trend: {yoy_data['trend'].upper()}</strong> — {yoy_data['interpretation']}</div>", unsafe_allow_html=True)
+        st.markdown(f"<div style='background:{tc}18;border-left:3px solid {tc};padding:.6rem 1rem;border-radius:4px;color:#cbd5e1;font-size:.85rem;margin-bottom:1rem;'><strong style='color:{tc};'>YoY Trend: {html.escape(yoy_data['trend'].upper())}</strong> - {html.escape(yoy_data['interpretation'])}</div>", unsafe_allow_html=True)
 
     # Gauges + sentiment
     col_g, col_s = st.columns([1, 1])

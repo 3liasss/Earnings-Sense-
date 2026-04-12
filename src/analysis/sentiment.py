@@ -18,7 +18,7 @@ import re
 from dataclasses import dataclass
 from typing import Optional
 
-# Lazy-loaded pipeline — avoids importing torch at module level
+# Lazy-loaded pipeline - avoids importing torch at module level
 _pipeline = None
 
 
