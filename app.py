@@ -208,21 +208,6 @@ if data is None:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # Correlation chart
-    if Path("assets/mci_vs_returns.png").exists():
-        col_chart, col_info2 = st.columns([2, 1])
-        with col_chart:
-            st.image("assets/mci_vs_returns.png", width="stretch")
-        with col_info2:
-            st.markdown("#### What this shows")
-            st.markdown("""
-Each dot is one company's MCI score vs next-day stock return after the 10-Q filing.
-
-Higher MCI = more direct, confident management language. The trend line (TSLA excluded as structural outlier) shows the correlation holds across sectors and quarters.
-
-The same META signal appeared twice: DRS 34.8 in Q3 2024 (fell 4.1%) and DRS 34.8 in Q3 2025 (fell 11.3%).
-            """)
-
     st.markdown("---")
 
     # Q3 2025 results table
