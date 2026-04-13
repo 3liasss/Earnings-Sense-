@@ -74,7 +74,7 @@ Earnings reported late October - November 2025.
 - **Key guidance phrases** - notable forward-looking sentences extracted from the text
 - **YoY delta** - automatic comparison to the prior quarter in the local database
 - **EPS actual vs. estimate chart** - when using transcript mode with an FMP key
-- **JSON export** - download the full analysis result
+- **PDF export** - download the full analysis result
 
 ### Market Scan
 - Auto-scans a configurable watchlist of tickers on load
