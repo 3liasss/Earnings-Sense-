@@ -10,6 +10,7 @@ _SECTORS: dict[str, str] = {
     "MSFT":  "Technology",
     "NVDA":  "Technology",
     "AMD":   "Technology",
+    "AMZN":  "Technology",
     "INTC":  "Technology",
     "QCOM":  "Technology",
     "TXN":   "Technology",
@@ -55,7 +56,6 @@ _SECTORS: dict[str, str] = {
     "RBLX":  "Communication Services",
     "MTCH":  "Communication Services",
     # Consumer Discretionary
-    "AMZN":  "Consumer Discretionary",
     "TSLA":  "Consumer Discretionary",
     "HD":    "Consumer Discretionary",
     "MCD":   "Consumer Discretionary",

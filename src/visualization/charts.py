@@ -256,15 +256,20 @@ def price_impact_chart(price_series: list[dict], earnings_date: str,
         hovertemplate="<b>%{x}</b><br>Close: $%{y:.2f}<extra></extra>",
     ))
 
-    # Earnings date vertical annotation
-    fig.add_vline(
-        x=earnings_date,
-        line_dash="dot",
-        line_color=COLORS["mci"],
-        line_width=2,
-        annotation_text=f"Earnings  MCI {mci:.0f}",
-        annotation_position="top right",
-        annotation_font_color=COLORS["mci"],
+    # Earnings date vertical line + annotation
+    # (add_vline with annotation_position breaks on string x-axes in Plotly 6.x)
+    fig.add_shape(
+        type="line", x0=earnings_date, x1=earnings_date,
+        y0=0, y1=1, yref="paper",
+        line=dict(color=COLORS["mci"], width=2, dash="dot"),
+    )
+    fig.add_annotation(
+        x=earnings_date, y=0.98, yref="paper",
+        text=f"Earnings  MCI {mci:.0f}",
+        showarrow=False,
+        font=dict(color=COLORS["mci"], size=11),
+        xanchor="left", yanchor="top",
+        bgcolor=COLORS["surface"], borderpad=3,
     )
 
     fig.update_layout(

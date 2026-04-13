@@ -197,12 +197,12 @@ if data is None:
     st.markdown("## EarningsSense")
     st.markdown("<div style='color:#94a3b8;margin-bottom:1.5rem;'>FinBERT + Loughran-McDonald NLP on SEC 10-Q filings. Made by Elias Wächter.</div>", unsafe_allow_html=True)
 
-    # Hero stats — all figures verified against market data
+    # Hero stats
     c1, c2, c3 = st.columns(3)
     with c1:
-        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>META DRS — Q3 2025</div><div style='color:#ef4444;font-size:2.2rem;font-weight:700;'>34.8</div><div style='color:#475569;font-size:.72rem;'>2× next-highest · stock fell 11.3% next day</div></div>", unsafe_allow_html=True)
+        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>META DRS - Q3 2025</div><div style='color:#ef4444;font-size:2.2rem;font-weight:700;'>34.8</div><div style='color:#475569;font-size:.72rem;'>2× next-highest · stock fell 11.3% next day</div></div>", unsafe_allow_html=True)
     with c2:
-        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>AMZN MCI — Q3 2025</div><div style='color:#22c55e;font-size:2.2rem;font-weight:700;'>41.4</div><div style='color:#475569;font-size:.72rem;'>hedge density 0.21/100w · stock up 9.6% next day</div></div>", unsafe_allow_html=True)
+        st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>AMZN MCI - Q3 2025</div><div style='color:#22c55e;font-size:2.2rem;font-weight:700;'>41.4</div><div style='color:#475569;font-size:.72rem;'>hedge density 0.21/100w · stock up 9.6% next day</div></div>", unsafe_allow_html=True)
     with c3:
         st.markdown("<div style='background:#1e293b;border:1px solid #334155;border-radius:12px;padding:1rem 1.25rem;text-align:center;'><div style='color:#64748b;font-size:.75rem;margin-bottom:.3rem;'>Next batch of Q1 2026 filings due</div><div style='color:#60a5fa;font-size:2.2rem;font-weight:700;'>May 10</div><div style='color:#475569;font-size:.72rem;'>40-day deadline · quarter ended March 31</div></div>", unsafe_allow_html=True)
 
@@ -210,9 +210,9 @@ if data is None:
 
     st.markdown("---")
 
-    # Q3 2025 verified results table
-    st.markdown("#### Q3 2025 results — MCI/DRS computed from live EDGAR filings, returns verified against market data")
-    st.markdown("<div style='color:#64748b;font-size:.78rem;margin-bottom:.6rem;'>Next-day returns are close-to-close from earnings report date to following trading session, verified via stockanalysis.com. MCI/DRS are model outputs — reproduce by running Live Analysis on any ticker.</div>", unsafe_allow_html=True)
+    # Q3 2025 results table
+    st.markdown("#### Q3 2025 results - MCI/DRS computed from live EDGAR filings")
+    st.markdown("<div style='color:#64748b;font-size:.78rem;margin-bottom:.6rem;'>Next-day returns are close-to-close from earnings report date to following trading session. MCI/DRS are model outputs - reproduce by running Live Analysis on any ticker.</div>", unsafe_allow_html=True)
     Q3_DATA = [
         {"Company": "GOOGL", "MCI": 43.6, "DRS": 16.5, "Hedge / 100w": 1.22, "Next-day return": "+2.7%"},
         {"Company": "MSFT",  "MCI": 42.8, "DRS":  2.2, "Hedge / 100w": 0.13, "Next-day return": "-2.9%"},
@@ -234,7 +234,7 @@ if data is None:
 
     # Filing countdown
     st.markdown("#### Upcoming 10-Q filings")
-    st.markdown("<div style='color:#64748b;font-size:.82rem;margin-bottom:.75rem;'>Large accelerated filers must file within 40 days of quarter end. Quarter ended March 31 for most — filings due by May 10.</div>", unsafe_allow_html=True)
+    st.markdown("<div style='color:#64748b;font-size:.82rem;margin-bottom:.75rem;'>Large accelerated filers must file within 40 days of quarter end. Quarter ended March 31 for most - filings due by May 10.</div>", unsafe_allow_html=True)
 
     from src.data.filing_calendar import get_all_upcoming
     DEFAULT_TICKERS_LAND = ["NVDA", "MSFT", "META", "AMZN", "GOOGL", "AAPL", "TSLA", "NFLX", "AMD", "ORCL"]
