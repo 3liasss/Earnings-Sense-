@@ -239,6 +239,117 @@ def fetch_filing_text(ticker: str, use_cache: bool = True) -> dict:
     return result
 
 
+def fetch_8k_text(ticker: str, use_cache: bool = True) -> dict:
+    """
+    Fetch the most recent 8-K earnings press release for a ticker from EDGAR.
+
+    Looks for EX-99.1 exhibit (the earnings release document) in the most
+    recent 8-K filing. Falls back to the 8-K primary document if no exhibit
+    is found.
+
+    Returns same dict shape as fetch_filing_text():
+        ticker, company, filing_date, report_date, text, source
+    """
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    cache_path = CACHE_DIR / f"{ticker.upper()}_8k.json"
+
+    if use_cache and cache_path.exists():
+        with open(cache_path) as f:
+            return json.load(f)
+
+    cik  = get_cik(ticker)
+    url  = SUBMISSIONS_URL.format(cik=cik)
+    data = _get(url).json()
+
+    filings      = data.get("filings", {}).get("recent", {})
+    forms        = filings.get("form", [])
+    accessions   = filings.get("accessionNumber", [])
+    dates        = filings.get("filingDate", [])
+    primary_docs = filings.get("primaryDocument", [])
+
+    filing_8k = None
+    for form, acc, date, pdoc in zip(forms, accessions, dates, primary_docs):
+        if form == "8-K":
+            filing_8k = {
+                "accession_number": acc.replace("-", ""),
+                "accession_raw":    acc,
+                "filing_date":      date,
+                "primary_document": pdoc,
+            }
+            break
+
+    if not filing_8k:
+        raise ValueError(f"No 8-K filings found for {ticker}.")
+
+    doc_url = _find_8k_exhibit_url(cik, filing_8k["accession_number"],
+                                    filing_8k.get("primary_document"))
+    if not doc_url:
+        raise ValueError(f"Could not locate 8-K document for {ticker}.")
+
+    html_text = _get(doc_url).text
+    text      = _extract_8k_text(html_text)
+    company_name = data.get("name", ticker.upper())
+
+    result = {
+        "ticker":      ticker.upper(),
+        "company":     company_name,
+        "filing_date": filing_8k["filing_date"],
+        "report_date": filing_8k["filing_date"],
+        "text":        text,
+        "source":      doc_url,
+    }
+
+    with open(cache_path, "w") as f:
+        json.dump(result, f, indent=2)
+
+    return result
+
+
+def _find_8k_exhibit_url(cik: str, accession: str,
+                          primary_document: Optional[str] = None) -> Optional[str]:
+    """
+    Return the URL for the EX-99.1 press release in an 8-K filing,
+    falling back to the primary 8-K document if no exhibit is found.
+    """
+    cik_raw = cik.lstrip("0")
+    base    = f"https://www.sec.gov/Archives/edgar/data/{cik_raw}/{accession}/"
+
+    try:
+        fmt_acc       = f"{accession[:10]}-{accession[10:12]}-{accession[12:]}"
+        index_url     = base + f"{fmt_acc}-index.json"
+        index_data    = _get(index_url).json()
+        docs          = index_data.get("documents", [])
+
+        # Prefer EX-99.1 (earnings press release)
+        for doc in docs:
+            if doc.get("type") in ("EX-99.1", "EX-99") and doc.get("name", "").endswith(".htm"):
+                return base + doc["name"]
+
+        # Fall back to primary 8-K document
+        for doc in docs:
+            if doc.get("type") == "8-K" and doc.get("name", "").endswith(".htm"):
+                return base + doc["name"]
+    except Exception:
+        pass
+
+    # Last resort: primaryDocument field
+    if primary_document and primary_document.endswith(".htm"):
+        return base + primary_document
+
+    return None
+
+
+def _extract_8k_text(html: str) -> str:
+    """Extract narrative text from an 8-K / EX-99.1 press release HTML."""
+    soup = BeautifulSoup(html, "html.parser")
+    for tag in soup(["script", "style"]):
+        tag.decompose()
+    text = soup.get_text(separator=" ", strip=True)
+    text = re.sub(r"\s{2,}", " ", text)
+    words = text.split()
+    return " ".join(words[:5000])
+
+
 def fetch_multiple_filings(ticker: str, n_quarters: int = 8) -> list[dict]:
     """
     Fetch text + metadata for the last n_quarters 10-Q filings.

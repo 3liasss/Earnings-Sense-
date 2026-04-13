@@ -36,21 +36,16 @@ def _get(url: str) -> object:
 
 def fetch_transcript(ticker: str, use_cache: bool = True) -> dict:
     """
-    Fetch the most recent earnings call transcript for a ticker via FMP API.
+    Fetch the most recent earnings call transcript for a ticker.
+
+    Primary source: FMP API (requires a paid plan for transcript access).
+    Fallback: SEC EDGAR 8-K earnings press release (EX-99.1, always free).
 
     Returns dict with keys:
         ticker, company, report_date, quarter_label, text,
         prepared_remarks, qa_text, source
-
-    Raises ValueError if API key is not set, quota exceeded, or no data found.
     """
     api_key = _get_api_key()
-    if not api_key:
-        raise ValueError(
-            "FMP_API_KEY not configured. "
-            "Add FMP_API_KEY = \"your_key\" to .streamlit/secrets.toml. "
-            "Free keys available at financialmodelingprep.com"
-        )
 
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     cache_path = CACHE_DIR / f"{ticker.upper()}_transcript.json"
@@ -59,32 +54,61 @@ def fetch_transcript(ticker: str, use_cache: bool = True) -> dict:
         with open(cache_path) as f:
             return json.load(f)
 
-    url  = f"{FMP_BASE}/earning_call_transcript/{ticker.upper()}?apikey={api_key}"
-    data = _get(url)
+    # Try FMP if a key is configured
+    if api_key:
+        try:
+            url  = f"{FMP_BASE}/earning_call_transcript/{ticker.upper()}?apikey={api_key}"
+            data = _get(url)
 
-    if isinstance(data, dict) and "Error Message" in data:
-        raise ValueError(f"FMP API error: {data['Error Message']}")
-    if not data or not isinstance(data, list):
-        raise ValueError(f"No transcripts found for {ticker} on FMP.")
+            if isinstance(data, dict) and "Error Message" in data:
+                raise ValueError(f"FMP API error: {data['Error Message']}")
+            if data and isinstance(data, list):
+                transcript = data[0]
+                content    = transcript.get("content", "").strip()
+                if content:
+                    prepared_remarks, qa_text = _split_transcript(content)
+                    q = transcript.get("quarter", "")
+                    y = transcript.get("year",    "")
+                    result = {
+                        "ticker":           ticker.upper(),
+                        "company":          ticker.upper(),
+                        "report_date":      (transcript.get("date", "") or "")[:10],
+                        "quarter_label":    f"Q{q} {y}" if q and y else "Latest",
+                        "text":             content,
+                        "prepared_remarks": prepared_remarks,
+                        "qa_text":          qa_text,
+                        "source":           "FMP Earnings Call Transcript",
+                    }
+                    with open(cache_path, "w") as f:
+                        json.dump(result, f, indent=2)
+                    return result
 
-    transcript = data[0]
-    content    = transcript.get("content", "").strip()
-    if not content:
-        raise ValueError(f"Transcript content is empty for {ticker}.")
+        except requests.HTTPError as e:
+            if e.response.status_code not in (401, 403):
+                raise  # unexpected error - propagate
+            # 401/403 = transcript endpoint not on current FMP plan; fall through to 8-K
+        except Exception:
+            pass  # any other FMP failure - fall through to 8-K
 
-    prepared_remarks, qa_text = _split_transcript(content)
-    q = transcript.get("quarter", "")
-    y = transcript.get("year",    "")
+    # Fall back to EDGAR 8-K earnings press release
+    return _fetch_8k_fallback(ticker, use_cache, cache_path)
+
+
+def _fetch_8k_fallback(ticker: str, use_cache: bool, cache_path: Path) -> dict:
+    """Fetch latest 8-K earnings press release from SEC EDGAR as transcript fallback."""
+    from src.data.edgar import fetch_8k_text
+
+    filing = fetch_8k_text(ticker, use_cache=use_cache)
 
     result = {
         "ticker":           ticker.upper(),
-        "company":          ticker.upper(),
-        "report_date":      (transcript.get("date", "") or "")[:10],
-        "quarter_label":    f"Q{q} {y}" if q and y else "Latest",
-        "text":             content,
-        "prepared_remarks": prepared_remarks,
-        "qa_text":          qa_text,
-        "source":           "FMP Earnings Call Transcript",
+        "company":          filing.get("company", ticker.upper()),
+        "report_date":      filing.get("report_date", ""),
+        "quarter_label":    filing.get("filing_date", "")[:7] or "Latest",
+        "text":             filing["text"],
+        "prepared_remarks": filing["text"],  # no Q&A split in press releases
+        "qa_text":          "",
+        "source":           "SEC EDGAR 8-K Earnings Release (FMP transcript requires paid plan)",
     }
 
     with open(cache_path, "w") as f:
