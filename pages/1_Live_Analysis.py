@@ -11,7 +11,6 @@ management language under scripted remarks vs. analyst pressure.
 from __future__ import annotations
 
 import html
-import json
 
 import streamlit as st
 
@@ -462,13 +461,17 @@ if run_btn and ticker_input:
     st.markdown("---")
 
     # Export + snippet
-    export_payload = {k: v for k, v in result.items() if k != "history"}
-    st.download_button(
-        "Download analysis (JSON)",
-        data=json.dumps(export_payload, indent=2, default=str),
-        file_name=f"{ticker}_{quarter}_earningssense.json",
-        mime="application/json",
-    )
+    from src.visualization.report_pdf import generate_pdf
+    try:
+        pdf_bytes = generate_pdf(result)
+        st.download_button(
+            "Download report (PDF)",
+            data=pdf_bytes,
+            file_name=f"{ticker}_{quarter}_earningssense.pdf",
+            mime="application/pdf",
+        )
+    except Exception as _pdf_err:
+        st.warning(f"PDF generation failed: {_pdf_err}")
 
     with st.expander(result["snippet_label"]):
         st.markdown(
