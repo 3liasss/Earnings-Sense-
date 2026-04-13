@@ -130,34 +130,119 @@ def _try_fmp(ticker: str, api_key: str) -> dict | None:
         return None
 
 
+# ── Source 2: Motley Fool helpers ─────────────────────────────────────────────
+
+def _fool_search(ticker: str) -> str | None:
+    """Try Motley Fool search endpoints to find the latest transcript URL."""
+    search_variants = [
+        f"https://www.fool.com/search/results/?q={ticker}+earnings+call+transcript",
+        f"https://www.fool.com/search/?q={ticker}+earnings+call+transcript",
+    ]
+    for search_url in search_variants:
+        try:
+            resp = requests.get(search_url, headers=_HEADERS, timeout=12)
+            if resp.status_code != 200:
+                continue
+            soup = BeautifulSoup(resp.text, "html.parser")
+            for a in soup.find_all("a", href=True):
+                href = a["href"]
+                if "earnings/call-transcripts" in href and (
+                    "earnings-call-transcript" in href or "earnings-call" in href
+                ):
+                    if not href.startswith("http"):
+                        href = "https://www.fool.com" + href
+                    return href
+        except Exception:
+            continue
+    return None
+
+
+def _fool_direct(ticker: str) -> str | None:
+    """
+    Construct likely Motley Fool transcript URLs from the ticker + recent
+    quarters and return the first one that actually loads an article.
+    """
+    from datetime import date, timedelta
+    import calendar
+
+    slug_base = _FOOL_SLUG_MAP.get(ticker.upper(), ticker.lower())
+
+    # Build (year, quarter) pairs for the last 3 quarters
+    today = date.today()
+    candidates: list[tuple[int, int]] = []
+    y, m = today.year, today.month
+    for _ in range(3):
+        q = (m - 1) // 3 + 1
+        candidates.append((y, q))
+        m -= 3
+        if m <= 0:
+            m += 12
+            y -= 1
+
+    for year, quarter in candidates:
+        # Approximate earnings date: end of the quarter + ~30 days
+        quarter_end_month = quarter * 3
+        last_day = calendar.monthrange(year, quarter_end_month)[1]
+        approx_date = date(year, quarter_end_month, last_day) + timedelta(days=28)
+
+        slug = f"{slug_base}-q{quarter}-{year}-earnings-call-transcript"
+        url  = (
+            f"https://www.fool.com/earnings/call-transcripts/"
+            f"{approx_date.year}/{approx_date.month:02d}/{approx_date.day:02d}/{slug}/"
+        )
+        try:
+            resp = requests.get(url, headers=_HEADERS, timeout=12)
+            if resp.status_code == 200:
+                soup = BeautifulSoup(resp.text, "html.parser")
+                # Verify it's actually an article (not a generic 404 redirect)
+                article = _extract_fool_article(soup)
+                if article and len(article.get_text().split()) > 300:
+                    return url
+        except Exception:
+            continue
+    return None
+
+
+def _extract_fool_article(soup: BeautifulSoup):
+    """Return the article body element from a Motley Fool transcript page."""
+    for tag, attrs in [
+        ("div",     {"class": "article-body"}),
+        ("div",     {"id":    "article-body"}),
+        ("div",     {"class": re.compile(r"article")}),
+        ("section", {"class": re.compile(r"article")}),
+        ("article", {}),
+        ("main",    {}),
+    ]:
+        candidate = soup.find(tag, attrs) if attrs else soup.find(tag)
+        if candidate and len(candidate.get_text().split()) > 200:
+            return candidate
+    return None
+
+
 # ── Source 2: Motley Fool ─────────────────────────────────────────────────────
+
+# Slug overrides for tickers whose Motley Fool company name differs from ticker
+_FOOL_SLUG_MAP: dict[str, str] = {
+    "META":   "meta-platforms",
+    "GOOGL":  "alphabet",
+    "GOOG":   "alphabet",
+    "BRK.B":  "berkshire-hathaway",
+    "BRK.A":  "berkshire-hathaway",
+}
+
 
 def _try_motley_fool(ticker: str) -> dict | None:
     """
-    Search Motley Fool for the latest earnings call transcript and scrape it.
+    Fetch the latest Motley Fool earnings call transcript for a ticker.
+
+    Strategy:
+      1. Try their search page (two URL formats: current & legacy).
+      2. If that fails, construct direct transcript URLs for the last two
+         quarters and attempt each until one returns a real article.
     Returns None on any failure so the caller can try the next source.
     """
     try:
-        # Search for transcript
-        search_url = (
-            f"https://www.fool.com/search/?q={ticker}+earnings+call+transcript"
-            f"&source=eefsiteheader"
-        )
-        resp = requests.get(search_url, headers=_HEADERS, timeout=15)
-        if resp.status_code != 200:
-            return None
-
-        soup          = BeautifulSoup(resp.text, "html.parser")
-        transcript_url = None
-
-        for a in soup.find_all("a", href=True):
-            href = a["href"]
-            if "earnings/call-transcripts" in href and "earnings-call-transcript" in href:
-                if not href.startswith("http"):
-                    href = "https://www.fool.com" + href
-                transcript_url = href
-                break
-
+        transcript_url = _fool_search(ticker) or _fool_direct(ticker)
         if not transcript_url:
             return None
 
@@ -173,19 +258,7 @@ def _try_motley_fool(ticker: str) -> dict | None:
         for tag in soup(["script", "style", "aside", "figure", "header", "footer", "nav"]):
             tag.decompose()
 
-        # Try multiple selectors for the article body
-        article = None
-        for tag, attrs in [
-            ("div",     {"class": "article-body"}),
-            ("div",     {"id":    "article-body"}),
-            ("section", {"class": re.compile("article")}),
-            ("article", {}),
-        ]:
-            candidate = soup.find(tag, attrs) if attrs else soup.find(tag)
-            if candidate and len(candidate.get_text().split()) > 200:
-                article = candidate
-                break
-
+        article = _extract_fool_article(soup)
         if not article:
             return None
 
