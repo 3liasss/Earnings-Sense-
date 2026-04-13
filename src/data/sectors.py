@@ -188,3 +188,8 @@ _SECTORS: dict[str, str] = {
 def get_sector(ticker: str) -> str:
     """Return the GICS sector for a ticker, or 'Unknown' if not found."""
     return _SECTORS.get(ticker.upper(), "Unknown")
+
+
+def get_tickers_in_sector(sector: str) -> list[str]:
+    """Return all tickers classified in the given sector."""
+    return [t for t, s in _SECTORS.items() if s == sector]

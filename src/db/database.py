@@ -96,3 +96,49 @@ def get_mci_history(ticker: str, limit: int = 12) -> list[dict]:
             (ticker, limit)
         ).fetchall()
     return [dict(r) for r in rows]
+
+
+def get_watchlist() -> list[str]:
+    """Return tickers in the watchlist, sorted alphabetically."""
+    with get_db() as db:
+        rows = db.execute("SELECT ticker FROM watchlist ORDER BY ticker").fetchall()
+    return [r["ticker"] for r in rows]
+
+
+def set_watchlist(tickers: list[str]) -> None:
+    """Replace the entire watchlist with the given tickers."""
+    with get_db() as db:
+        db.execute("DELETE FROM watchlist")
+        for t in tickers:
+            t = t.strip().upper()
+            if t:
+                db.execute("INSERT OR IGNORE INTO watchlist (ticker) VALUES (?)", (t,))
+
+
+def get_sector_benchmarks(tickers: list[str]) -> dict:
+    """
+    Return avg MCI and DRS for a list of tickers using their most recent DB records.
+    Returns {} if no records found.
+    """
+    if not tickers:
+        return {}
+    placeholders = ",".join("?" * len(tickers))
+    with get_db() as db:
+        rows = db.execute(f"""
+            SELECT h.ticker, h.mci, h.drs
+            FROM mci_history h
+            INNER JOIN (
+                SELECT ticker, MAX(id) AS max_id
+                FROM mci_history
+                WHERE ticker IN ({placeholders})
+                GROUP BY ticker
+            ) latest ON h.ticker = latest.ticker AND h.id = latest.max_id
+        """, tickers).fetchall()
+    data = [dict(r) for r in rows]
+    if not data:
+        return {}
+    return {
+        "count":   len(data),
+        "avg_mci": round(sum(d["mci"] for d in data) / len(data), 1),
+        "avg_drs": round(sum(d["drs"] for d in data) / len(data), 1),
+    }

@@ -297,6 +297,108 @@ def price_impact_chart(price_series: list[dict], earnings_date: str,
     return fig
 
 
+# ── Multi-quarter MCI / DRS trend ────────────────────────────────────────────
+
+def mci_trend_chart(history: list[dict]) -> go.Figure:
+    """
+    Line chart of MCI and DRS across multiple quarters.
+    history: list of dicts from get_mci_history() with keys quarter, report_date, mci, drs.
+    """
+    sorted_h = sorted(history, key=lambda x: x.get("report_date") or x.get("quarter", ""))
+    labels = [h.get("quarter") or h.get("report_date", "?") for h in sorted_h]
+    mcis   = [h.get("mci", 0) for h in sorted_h]
+    drss   = [h.get("drs", 0) for h in sorted_h]
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=labels, y=mcis,
+        mode="lines+markers",
+        line=dict(color=COLORS["mci"], width=2.5),
+        marker=dict(size=8, color=COLORS["mci"]),
+        name="MCI",
+        hovertemplate="<b>%{x}</b><br>MCI: %{y:.1f}<extra></extra>",
+    ))
+    fig.add_trace(go.Scatter(
+        x=labels, y=drss,
+        mode="lines+markers",
+        line=dict(color=COLORS["drs"], width=2.5, dash="dot"),
+        marker=dict(size=8, color=COLORS["drs"]),
+        name="DRS",
+        hovertemplate="<b>%{x}</b><br>DRS: %{y:.1f}<extra></extra>",
+    ))
+    fig.update_layout(
+        height=260,
+        xaxis=dict(
+            showgrid=True, gridcolor=COLORS["grid"],
+            tickfont={"color": COLORS["subtext"]},
+        ),
+        yaxis=dict(
+            range=[0, 100],
+            showgrid=True, gridcolor=COLORS["grid"],
+            tickfont={"color": COLORS["subtext"]},
+        ),
+        legend=dict(font={"color": COLORS["text"]}),
+        title={
+            "text": "MCI / DRS Multi-Quarter Trend",
+            "font": {"size": 14, "color": COLORS["subtext"]},
+        },
+        **_base_layout(),
+    )
+    return fig
+
+
+# ── EPS actual vs. estimate ───────────────────────────────────────────────────
+
+def earnings_surprise_chart(surprises: list[dict], ticker: str) -> go.Figure:
+    """
+    Dot + bar chart showing EPS actual (dots) vs. estimate (bars) per quarter.
+    surprises: list of {date, actual_eps, estimated_eps, surprise_pct}
+    """
+    rev       = list(reversed(surprises))
+    dates     = [s["date"][:7] for s in rev]
+    actuals   = [s["actual_eps"]    for s in rev]
+    estimates = [s["estimated_eps"] for s in rev]
+    dot_colors = [
+        COLORS["positive"] if a >= e else COLORS["negative"]
+        for a, e in zip(actuals, estimates)
+    ]
+
+    fig = go.Figure()
+    fig.add_trace(go.Bar(
+        x=dates, y=estimates,
+        name="Estimated EPS",
+        marker_color=COLORS["grid"],
+        opacity=0.75,
+        hovertemplate="<b>%{x}</b><br>Estimate: $%{y:.3f}<extra></extra>",
+    ))
+    fig.add_trace(go.Scatter(
+        x=dates, y=actuals,
+        mode="markers",
+        marker=dict(size=13, color=dot_colors, line=dict(color="white", width=1.5)),
+        name="Actual EPS",
+        hovertemplate="<b>%{x}</b><br>Actual: $%{y:.3f}<extra></extra>",
+    ))
+    fig.update_layout(
+        height=240,
+        xaxis=dict(
+            showgrid=False,
+            tickfont={"color": COLORS["subtext"]},
+        ),
+        yaxis=dict(
+            showgrid=True, gridcolor=COLORS["grid"],
+            tickfont={"color": COLORS["subtext"]},
+            tickprefix="$",
+        ),
+        legend=dict(font={"color": COLORS["text"]}),
+        title={
+            "text": f"{ticker} - EPS Actual vs. Estimate",
+            "font": {"size": 14, "color": COLORS["subtext"]},
+        },
+        **_base_layout(),
+    )
+    return fig
+
+
 # ── Backtest scatter ──────────────────────────────────────────────────────────
 
 def backtest_scatter(samples: list[dict], pearson_r: float, p_value: float) -> go.Figure:

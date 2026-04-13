@@ -38,18 +38,54 @@ st.markdown("<div style='color:#94a3b8;margin-bottom:1.5rem;'>Latest 10-Q filing
 
 DEFAULT_TICKERS = ["NVDA", "MSFT", "META", "AMZN", "GOOGL", "AAPL", "TSLA", "NFLX", "AMD", "ORCL"]
 
+# Session state for ticker text (enables Load Watchlist to update the text area)
+if "scan_ticker_text" not in st.session_state:
+    st.session_state["scan_ticker_text"] = "\n".join(DEFAULT_TICKERS)
+
 with st.sidebar:
     st.markdown("### Tickers to scan")
-    custom = st.text_area(
+    st.text_area(
         "One per line or comma-separated",
-        value="\n".join(DEFAULT_TICKERS),
         height=220,
         label_visibility="collapsed",
+        key="scan_ticker_text",
     )
-    tickers = [t.strip().upper() for t in custom.replace(",", "\n").splitlines() if t.strip()]
+    tickers  = [t.strip().upper() for t in
+                st.session_state["scan_ticker_text"].replace(",", "\n").splitlines()
+                if t.strip()]
     run_scan = st.button("Run Scan", type="primary")
+
     st.markdown("---")
     st.markdown("<div style='color:#475569;font-size:0.75rem;'>Each ticker fetches the most recent 10-Q from SEC EDGAR, extracts the MD&A section, and runs FinBERT + Loughran-McDonald analysis.</div>", unsafe_allow_html=True)
+
+    # Watchlist
+    st.markdown("---")
+    st.markdown("**Watchlist**")
+    from src.db.database import init_db, get_watchlist, set_watchlist
+    init_db()
+
+    wl_col1, wl_col2 = st.columns(2)
+    with wl_col1:
+        if st.button("Save", help="Save current tickers as watchlist"):
+            set_watchlist(tickers)
+            st.success(f"Saved {len(tickers)}")
+    with wl_col2:
+        if st.button("Load", help="Load saved watchlist into scan list"):
+            saved = get_watchlist()
+            if saved:
+                st.session_state["scan_ticker_text"] = "\n".join(saved)
+                st.rerun()
+            else:
+                st.info("Watchlist is empty")
+
+    saved_wl = get_watchlist()
+    if saved_wl:
+        st.markdown(
+            f"<div style='color:#475569;font-size:.75rem;'>"
+            f"{len(saved_wl)} saved: {', '.join(saved_wl[:6])}"
+            f"{'...' if len(saved_wl) > 6 else ''}</div>",
+            unsafe_allow_html=True,
+        )
 
 # ── Auto-run on first load ────────────────────────────────────────────────────
 
