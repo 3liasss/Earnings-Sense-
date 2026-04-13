@@ -55,7 +55,7 @@ Earnings reported late October - November 2025.
 | TSLA | 36.5 | 8.7 | 0.49 | +2.3% |
 | **META** | **23.0** | **34.8** | **2.88** | **-11.3%** |
 
-**META's DRS was 34.8 - more than 2x the next-highest company.** Hedge density of 2.88 per 100 words vs. an average of 0.26 for the other six. The filing was loaded with "subject to", "we believe", "may", "uncertain" throughout sections where other filings were direct. The stock dropped 11.3% the following session (Oct 29 close $751.67 -> Oct 30 close $666.47).
+**META's DRS was 34.8 - more than 2x the next-highest company.** Hedge density of 2.88 per 100 words vs. an average of 0.40 for the other six. The filing was loaded with "subject to", "we believe", "may", "uncertain" throughout sections where other filings were direct. The stock dropped 11.3% the following session (Oct 29 close $751.67 -> Oct 30 close $666.47).
 
 **The same pattern appeared in Q3 2024:** META's DRS was 34.8 again, and the stock dropped 4.1% (Oct 30 close $588.96 -> Oct 31 close $564.86).
 
