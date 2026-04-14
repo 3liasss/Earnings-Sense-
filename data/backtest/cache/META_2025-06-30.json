@@ -1,0 +1,16 @@
+{
+  "ticker": "META",
+  "quarter": "2025-Q2",
+  "report_date": "2025-06-30",
+  "filing_date": "2025-07-31",
+  "mci": 43.6,
+  "drs": 22.7,
+  "hedge_density": 1.14,
+  "certainty_ratio": 0.397,
+  "passive_voice_ratio": 0.134,
+  "vague_language_score": 0.9,
+  "word_count": 5000,
+  "next_day_return": -0.0256,
+  "five_day_return": -0.0236,
+  "thirty_day_return": 0.0703
+}

@@ -1,0 +1,16 @@
+{
+  "ticker": "AVGO",
+  "quarter": "2024-Q3",
+  "report_date": "2024-08-04",
+  "filing_date": "2024-09-11",
+  "mci": 45.5,
+  "drs": 20.1,
+  "hedge_density": 0.968,
+  "certainty_ratio": 0.4,
+  "passive_voice_ratio": 0.053,
+  "vague_language_score": 1.252,
+  "word_count": 3513,
+  "next_day_return": 0.013,
+  "five_day_return": 0.046,
+  "thirty_day_return": 0.1435
+}

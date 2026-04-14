@@ -1,0 +1,16 @@
+{
+  "ticker": "NOW",
+  "quarter": "2025-Q3",
+  "report_date": "2025-09-30",
+  "filing_date": "2025-10-30",
+  "mci": 43.9,
+  "drs": 23.6,
+  "hedge_density": 0.9,
+  "certainty_ratio": 0.435,
+  "passive_voice_ratio": 0.189,
+  "vague_language_score": 1.24,
+  "word_count": 5000,
+  "next_day_return": -0.0085,
+  "five_day_return": -0.0174,
+  "thirty_day_return": -0.0648
+}

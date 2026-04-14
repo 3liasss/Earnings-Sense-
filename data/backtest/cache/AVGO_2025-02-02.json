@@ -1,0 +1,16 @@
+{
+  "ticker": "AVGO",
+  "quarter": "2025-Q1",
+  "report_date": "2025-02-02",
+  "filing_date": "2025-03-12",
+  "mci": 46.3,
+  "drs": 21.6,
+  "hedge_density": 1.085,
+  "certainty_ratio": 0.594,
+  "passive_voice_ratio": 0.036,
+  "vague_language_score": 1.575,
+  "word_count": 2857,
+  "next_day_return": 0.0216,
+  "five_day_return": 0.0795,
+  "thirty_day_return": -0.1335
+}

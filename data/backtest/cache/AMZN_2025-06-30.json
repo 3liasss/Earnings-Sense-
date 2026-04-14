@@ -1,0 +1,16 @@
+{
+  "ticker": "AMZN",
+  "quarter": "2025-Q2",
+  "report_date": "2025-06-30",
+  "filing_date": "2025-08-01",
+  "mci": 38.6,
+  "drs": 31.8,
+  "hedge_density": 2.1,
+  "certainty_ratio": 0.208,
+  "passive_voice_ratio": 0.15,
+  "vague_language_score": 1.18,
+  "word_count": 5000,
+  "next_day_return": 0.0049,
+  "five_day_return": -0.0001,
+  "thirty_day_return": 0.0095
+}

@@ -1,0 +1,16 @@
+{
+  "ticker": "NFLX",
+  "quarter": "2025-Q3",
+  "report_date": "2025-09-30",
+  "filing_date": "2025-10-22",
+  "mci": 37.2,
+  "drs": 39.3,
+  "hedge_density": 2.628,
+  "certainty_ratio": 0.75,
+  "passive_voice_ratio": 0.28,
+  "vague_language_score": 0.968,
+  "word_count": 723,
+  "next_day_return": -0.0234,
+  "five_day_return": -0.0065,
+  "thirty_day_return": -0.0521
+}

@@ -1,0 +1,16 @@
+{
+  "ticker": "CRM",
+  "quarter": "2024-Q2",
+  "report_date": "2024-04-30",
+  "filing_date": "2024-05-30",
+  "mci": 41.2,
+  "drs": 26.9,
+  "hedge_density": 1.442,
+  "certainty_ratio": 0.3,
+  "passive_voice_ratio": 0.179,
+  "vague_language_score": 1.027,
+  "word_count": 4091,
+  "next_day_return": -0.0009,
+  "five_day_return": 0.0307,
+  "thirty_day_return": -0.1232
+}

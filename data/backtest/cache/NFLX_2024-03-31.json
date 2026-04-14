@@ -1,0 +1,16 @@
+{
+  "ticker": "NFLX",
+  "quarter": "2024-Q1",
+  "report_date": "2024-03-31",
+  "filing_date": "2024-04-22",
+  "mci": 36.1,
+  "drs": 37.8,
+  "hedge_density": 2.749,
+  "certainty_ratio": 0.529,
+  "passive_voice_ratio": 0.25,
+  "vague_language_score": 0.515,
+  "word_count": 582,
+  "next_day_return": -0.0002,
+  "five_day_return": 0.023,
+  "thirty_day_return": 0.0037
+}

@@ -1,0 +1,16 @@
+{
+  "ticker": "UNH",
+  "quarter": "2024-Q2",
+  "report_date": "2024-06-30",
+  "filing_date": "2024-08-09",
+  "mci": 42.5,
+  "drs": 29.0,
+  "hedge_density": 1.874,
+  "certainty_ratio": 0.583,
+  "passive_voice_ratio": 0.077,
+  "vague_language_score": 1.533,
+  "word_count": 587,
+  "next_day_return": 0.0073,
+  "five_day_return": -0.0051,
+  "thirty_day_return": 0.1609
+}

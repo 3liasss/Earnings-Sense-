@@ -1,0 +1,16 @@
+{
+  "ticker": "PG",
+  "quarter": "2025-Q4",
+  "report_date": "2025-12-31",
+  "filing_date": "2026-01-23",
+  "mci": 44.3,
+  "drs": 22.0,
+  "hedge_density": 0.92,
+  "certainty_ratio": 0.404,
+  "passive_voice_ratio": 0.149,
+  "vague_language_score": 1.06,
+  "word_count": 5000,
+  "next_day_return": -0.0106,
+  "five_day_return": -0.0124,
+  "thirty_day_return": 0.1249
+}

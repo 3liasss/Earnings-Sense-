@@ -1,0 +1,16 @@
+{
+  "ticker": "KO",
+  "quarter": "2025-Q1",
+  "report_date": "2025-03-28",
+  "filing_date": "2025-05-01",
+  "mci": 48.9,
+  "drs": 17.7,
+  "hedge_density": 0.56,
+  "certainty_ratio": 0.897,
+  "passive_voice_ratio": 0.102,
+  "vague_language_score": 1.06,
+  "word_count": 5000,
+  "next_day_return": 0.0177,
+  "five_day_return": -0.0063,
+  "thirty_day_return": -0.012
+}

@@ -1,0 +1,16 @@
+{
+  "ticker": "HON",
+  "quarter": "2024-Q2",
+  "report_date": "2024-06-30",
+  "filing_date": "2024-07-25",
+  "mci": 44.4,
+  "drs": 20.6,
+  "hedge_density": 0.998,
+  "certainty_ratio": 0.388,
+  "passive_voice_ratio": 0.119,
+  "vague_language_score": 0.728,
+  "word_count": 4809,
+  "next_day_return": 0.0108,
+  "five_day_return": -0.0017,
+  "thirty_day_return": -0.0674
+}

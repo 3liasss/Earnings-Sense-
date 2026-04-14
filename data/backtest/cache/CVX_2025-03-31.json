@@ -1,0 +1,16 @@
+{
+  "ticker": "CVX",
+  "quarter": "2025-Q1",
+  "report_date": "2025-03-31",
+  "filing_date": "2025-05-08",
+  "mci": 45.0,
+  "drs": 23.0,
+  "hedge_density": 1.02,
+  "certainty_ratio": 0.481,
+  "passive_voice_ratio": 0.099,
+  "vague_language_score": 1.58,
+  "word_count": 5000,
+  "next_day_return": 0.0072,
+  "five_day_return": -0.1623,
+  "thirty_day_return": -0.1491
+}

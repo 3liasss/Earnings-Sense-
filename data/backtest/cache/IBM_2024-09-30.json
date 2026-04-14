@@ -1,0 +1,16 @@
+{
+  "ticker": "IBM",
+  "quarter": "2024-Q3",
+  "report_date": "2024-09-30",
+  "filing_date": "2024-10-30",
+  "mci": 47.1,
+  "drs": 16.8,
+  "hedge_density": 0.66,
+  "certainty_ratio": 0.588,
+  "passive_voice_ratio": 0.09,
+  "vague_language_score": 0.68,
+  "word_count": 5000,
+  "next_day_return": -0.0078,
+  "five_day_return": 0.0273,
+  "thirty_day_return": -0.034
+}

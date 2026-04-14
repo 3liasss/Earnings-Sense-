@@ -1,0 +1,16 @@
+{
+  "ticker": "MSFT",
+  "quarter": "2025-Q1",
+  "report_date": "2025-03-31",
+  "filing_date": "2025-04-30",
+  "mci": 51.4,
+  "drs": 14.3,
+  "hedge_density": 0.34,
+  "certainty_ratio": 1.056,
+  "passive_voice_ratio": 0.048,
+  "vague_language_score": 1.06,
+  "word_count": 5000,
+  "next_day_return": 0.0181,
+  "five_day_return": -0.0467,
+  "thirty_day_return": 0.1965
+}

@@ -1,0 +1,16 @@
+{
+  "ticker": "TXN",
+  "quarter": "2025-Q3",
+  "report_date": "2025-09-30",
+  "filing_date": "2025-10-23",
+  "mci": 45.7,
+  "drs": 16.5,
+  "hedge_density": 0.581,
+  "certainty_ratio": 0.267,
+  "passive_voice_ratio": 0.1,
+  "vague_language_score": 0.664,
+  "word_count": 2409,
+  "next_day_return": -0.0182,
+  "five_day_return": -0.0363,
+  "thirty_day_return": -0.1229
+}

@@ -1,0 +1,16 @@
+{
+  "ticker": "V",
+  "quarter": "2025-Q2",
+  "report_date": "2025-06-30",
+  "filing_date": "2025-07-30",
+  "mci": 45.8,
+  "drs": 20.2,
+  "hedge_density": 0.7,
+  "certainty_ratio": 0.528,
+  "passive_voice_ratio": 0.15,
+  "vague_language_score": 1.06,
+  "word_count": 5000,
+  "next_day_return": 0.0012,
+  "five_day_return": -0.0014,
+  "thirty_day_return": -0.0499
+}

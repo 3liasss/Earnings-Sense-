@@ -1,0 +1,16 @@
+{
+  "ticker": "NOW",
+  "quarter": "2024-Q2",
+  "report_date": "2024-06-30",
+  "filing_date": "2024-07-25",
+  "mci": 43.9,
+  "drs": 23.9,
+  "hedge_density": 0.94,
+  "certainty_ratio": 0.417,
+  "passive_voice_ratio": 0.178,
+  "vague_language_score": 1.32,
+  "word_count": 5000,
+  "next_day_return": 0.0065,
+  "five_day_return": -0.057,
+  "thirty_day_return": 0.0378
+}

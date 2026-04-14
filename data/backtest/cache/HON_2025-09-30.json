@@ -1,0 +1,16 @@
+{
+  "ticker": "HON",
+  "quarter": "2025-Q3",
+  "report_date": "2025-09-30",
+  "filing_date": "2025-10-23",
+  "mci": 44.0,
+  "drs": 18.9,
+  "hedge_density": 0.889,
+  "certainty_ratio": 0.273,
+  "passive_voice_ratio": 0.135,
+  "vague_language_score": 0.351,
+  "word_count": 4837,
+  "next_day_return": -0.0015,
+  "five_day_return": -0.0072,
+  "thirty_day_return": 0.0101
+}

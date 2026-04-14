@@ -1,0 +1,16 @@
+{
+  "ticker": "ORCL",
+  "quarter": "2024-Q3",
+  "report_date": "2024-08-31",
+  "filing_date": "2024-09-10",
+  "mci": 43.9,
+  "drs": 26.3,
+  "hedge_density": 1.603,
+  "certainty_ratio": 0.778,
+  "passive_voice_ratio": 0.118,
+  "vague_language_score": 1.002,
+  "word_count": 499,
+  "next_day_return": 0.009,
+  "five_day_return": 0.1175,
+  "thirty_day_return": 0.2508
+}

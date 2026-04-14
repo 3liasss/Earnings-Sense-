@@ -1,0 +1,16 @@
+{
+  "ticker": "ORCL",
+  "quarter": "2026-Q1",
+  "report_date": "2026-02-28",
+  "filing_date": "2026-03-11",
+  "mci": 43.1,
+  "drs": 27.9,
+  "hedge_density": 1.533,
+  "certainty_ratio": 0.7,
+  "passive_voice_ratio": 0.167,
+  "vague_language_score": 1.193,
+  "word_count": 587,
+  "next_day_return": -0.0016,
+  "five_day_return": 0.0155,
+  "thirty_day_return": 0.0959
+}

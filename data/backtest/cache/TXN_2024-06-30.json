@@ -1,0 +1,16 @@
+{
+  "ticker": "TXN",
+  "quarter": "2024-Q2",
+  "report_date": "2024-06-30",
+  "filing_date": "2024-07-24",
+  "mci": 50.0,
+  "drs": 13.5,
+  "hedge_density": 0.152,
+  "certainty_ratio": 0.75,
+  "passive_voice_ratio": 0.087,
+  "vague_language_score": 0.913,
+  "word_count": 1972,
+  "next_day_return": 0.0196,
+  "five_day_return": 0.0286,
+  "thirty_day_return": 0.0202
+}

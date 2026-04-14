@@ -1,0 +1,16 @@
+{
+  "ticker": "IBM",
+  "quarter": "2025-Q2",
+  "report_date": "2025-06-30",
+  "filing_date": "2025-07-24",
+  "mci": 48.7,
+  "drs": 13.9,
+  "hedge_density": 0.38,
+  "certainty_ratio": 0.65,
+  "passive_voice_ratio": 0.085,
+  "vague_language_score": 0.52,
+  "word_count": 5000,
+  "next_day_return": -0.0121,
+  "five_day_return": -0.0148,
+  "thirty_day_return": -0.1982
+}

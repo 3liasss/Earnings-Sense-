@@ -1,0 +1,16 @@
+{
+  "ticker": "ORCL",
+  "quarter": "2025-Q3",
+  "report_date": "2025-08-31",
+  "filing_date": "2025-09-10",
+  "mci": 43.0,
+  "drs": 28.2,
+  "hedge_density": 1.593,
+  "certainty_ratio": 0.7,
+  "passive_voice_ratio": 0.158,
+  "vague_language_score": 1.239,
+  "word_count": 565,
+  "next_day_return": -0.0082,
+  "five_day_return": 0.0719,
+  "thirty_day_return": 0.3294
+}

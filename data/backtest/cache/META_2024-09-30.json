@@ -1,0 +1,16 @@
+{
+  "ticker": "META",
+  "quarter": "2024-Q3",
+  "report_date": "2024-09-30",
+  "filing_date": "2024-10-31",
+  "mci": 43.2,
+  "drs": 23.2,
+  "hedge_density": 1.18,
+  "certainty_ratio": 0.35,
+  "passive_voice_ratio": 0.133,
+  "vague_language_score": 0.96,
+  "word_count": 5000,
+  "next_day_return": 0.007,
+  "five_day_return": 0.0216,
+  "thirty_day_return": 0.0187
+}

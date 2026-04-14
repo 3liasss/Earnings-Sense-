@@ -1,0 +1,16 @@
+{
+  "ticker": "TSLA",
+  "quarter": "2024-Q1",
+  "report_date": "2024-03-31",
+  "filing_date": "2024-04-24",
+  "mci": 62.4,
+  "drs": 12.2,
+  "hedge_density": 0.0,
+  "certainty_ratio": 3.0,
+  "passive_voice_ratio": 0.053,
+  "vague_language_score": 1.205,
+  "word_count": 581,
+  "next_day_return": -0.049,
+  "five_day_return": -0.0128,
+  "thirty_day_return": -0.019
+}

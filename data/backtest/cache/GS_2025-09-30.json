@@ -1,0 +1,16 @@
+{
+  "ticker": "GS",
+  "quarter": "2025-Q3",
+  "report_date": "2025-09-30",
+  "filing_date": "2025-10-31",
+  "mci": 42.6,
+  "drs": 19.3,
+  "hedge_density": 0.616,
+  "certainty_ratio": 0.0,
+  "passive_voice_ratio": 0.208,
+  "vague_language_score": 0.462,
+  "word_count": 649,
+  "next_day_return": -0.0136,
+  "five_day_return": -0.0084,
+  "thirty_day_return": 0.0175
+}

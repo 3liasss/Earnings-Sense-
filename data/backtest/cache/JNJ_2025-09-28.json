@@ -1,0 +1,16 @@
+{
+  "ticker": "JNJ",
+  "quarter": "2025-Q3",
+  "report_date": "2025-09-28",
+  "filing_date": "2025-10-22",
+  "mci": 46.6,
+  "drs": 15.3,
+  "hedge_density": 0.72,
+  "certainty_ratio": 0.324,
+  "passive_voice_ratio": 0.021,
+  "vague_language_score": 0.7,
+  "word_count": 5000,
+  "next_day_return": 0.0209,
+  "five_day_return": 0.036,
+  "thirty_day_return": 0.0374
+}

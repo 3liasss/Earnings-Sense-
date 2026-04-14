@@ -1,0 +1,16 @@
+{
+  "ticker": "AVGO",
+  "quarter": "2026-Q1",
+  "report_date": "2026-02-01",
+  "filing_date": "2026-03-11",
+  "mci": 47.0,
+  "drs": 18.7,
+  "hedge_density": 0.849,
+  "certainty_ratio": 0.542,
+  "passive_voice_ratio": 0.034,
+  "vague_language_score": 1.292,
+  "word_count": 2709,
+  "next_day_return": -0.0326,
+  "five_day_return": 0.0387,
+  "thirty_day_return": -0.0296
+}

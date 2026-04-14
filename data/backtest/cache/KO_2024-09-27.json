@@ -1,0 +1,16 @@
+{
+  "ticker": "KO",
+  "quarter": "2024-Q3",
+  "report_date": "2024-09-27",
+  "filing_date": "2024-10-24",
+  "mci": 50.2,
+  "drs": 15.7,
+  "hedge_density": 0.4,
+  "certainty_ratio": 1.0,
+  "passive_voice_ratio": 0.091,
+  "vague_language_score": 0.94,
+  "word_count": 5000,
+  "next_day_return": 0.0009,
+  "five_day_return": -0.0227,
+  "thirty_day_return": -0.1097
+}

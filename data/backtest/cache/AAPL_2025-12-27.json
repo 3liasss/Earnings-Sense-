@@ -1,0 +1,16 @@
+{
+  "ticker": "AAPL",
+  "quarter": "2025-Q4",
+  "report_date": "2025-12-27",
+  "filing_date": "2026-01-30",
+  "mci": 50.3,
+  "drs": 19.5,
+  "hedge_density": 0.511,
+  "certainty_ratio": 1.267,
+  "passive_voice_ratio": 0.146,
+  "vague_language_score": 1.315,
+  "word_count": 2738,
+  "next_day_return": -0.0025,
+  "five_day_return": -0.0416,
+  "thirty_day_return": 0.0073
+}

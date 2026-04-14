@@ -1,0 +1,16 @@
+{
+  "ticker": "CRM",
+  "quarter": "2025-Q2",
+  "report_date": "2025-04-30",
+  "filing_date": "2025-05-29",
+  "mci": 38.8,
+  "drs": 30.5,
+  "hedge_density": 2.464,
+  "certainty_ratio": 0.231,
+  "passive_voice_ratio": 0.048,
+  "vague_language_score": 0.821,
+  "word_count": 487,
+  "next_day_return": 0.0023,
+  "five_day_return": 0.0354,
+  "thirty_day_return": -0.0067
+}

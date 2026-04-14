@@ -1,0 +1,16 @@
+{
+  "ticker": "AMD",
+  "quarter": "2025-Q3",
+  "report_date": "2025-09-27",
+  "filing_date": "2025-11-05",
+  "mci": 50.3,
+  "drs": 15.9,
+  "hedge_density": 0.509,
+  "certainty_ratio": 0.944,
+  "passive_voice_ratio": 0.04,
+  "vague_language_score": 1.197,
+  "word_count": 3341,
+  "next_day_return": 0.0027,
+  "five_day_return": 0.2625,
+  "thirty_day_return": 0.512
+}

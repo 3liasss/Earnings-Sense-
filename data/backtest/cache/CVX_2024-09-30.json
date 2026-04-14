@@ -1,0 +1,16 @@
+{
+  "ticker": "CVX",
+  "quarter": "2024-Q3",
+  "report_date": "2024-09-30",
+  "filing_date": "2024-11-07",
+  "mci": 45.4,
+  "drs": 22.5,
+  "hedge_density": 1.02,
+  "certainty_ratio": 0.558,
+  "passive_voice_ratio": 0.101,
+  "vague_language_score": 1.4,
+  "word_count": 5000,
+  "next_day_return": 0.0165,
+  "five_day_return": 0.0262,
+  "thirty_day_return": 0.0627
+}

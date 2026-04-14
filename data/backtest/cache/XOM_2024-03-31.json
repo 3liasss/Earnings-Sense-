@@ -1,0 +1,16 @@
+{
+  "ticker": "XOM",
+  "quarter": "2024-Q1",
+  "report_date": "2024-03-31",
+  "filing_date": "2024-04-29",
+  "mci": 45.2,
+  "drs": 17.7,
+  "hedge_density": 0.72,
+  "certainty_ratio": 0.27,
+  "passive_voice_ratio": 0.098,
+  "vague_language_score": 0.72,
+  "word_count": 5000,
+  "next_day_return": 0.0196,
+  "five_day_return": 0.0304,
+  "thirty_day_return": 0.0079
+}
