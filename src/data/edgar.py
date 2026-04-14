@@ -92,7 +92,6 @@ def get_recent_10q_filings(cik: str, limit: int = 4) -> list[dict]:
     accessions = filings.get("accessionNumber", [])
     dates = filings.get("filingDate", [])
     report_dates = filings.get("reportDate", [])
-
     primary_docs = filings.get("primaryDocument", [])
 
     results = []
@@ -106,6 +105,43 @@ def get_recent_10q_filings(cik: str, limit: int = 4) -> list[dict]:
                 "primary_document": pdoc,
             })
         if len(results) >= limit:
+            break
+
+    return results
+
+
+def get_all_10q_filings(cik: str, max_quarters: int = 32) -> list[dict]:
+    """
+    Return up to max_quarters 10-Q filings going back as far as EDGAR's
+    recent-submissions batch allows (typically 8+ years).
+
+    The EDGAR submissions API stores the last ~1000 filings in
+    data.filings.recent - this covers 30+ 10-Qs for most large caps.
+    Results are returned newest-first.
+    """
+    url  = SUBMISSIONS_URL.format(cik=cik)
+    data = _get(url).json()
+
+    filings      = data.get("filings", {}).get("recent", {})
+    forms        = filings.get("form", [])
+    accessions   = filings.get("accessionNumber", [])
+    dates        = filings.get("filingDate", [])
+    report_dates = filings.get("reportDate", [])
+    primary_docs = filings.get("primaryDocument", [])
+
+    results = []
+    for form, acc, date, rdate, pdoc in zip(
+        forms, accessions, dates, report_dates, primary_docs
+    ):
+        if form == "10-Q":
+            results.append({
+                "accession_number": acc.replace("-", ""),
+                "accession_raw":    acc,
+                "filing_date":      date,
+                "report_date":      rdate,
+                "primary_document": pdoc,
+            })
+        if len(results) >= max_quarters:
             break
 
     return results
