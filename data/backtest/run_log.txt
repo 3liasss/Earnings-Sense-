@@ -5,3 +5,61 @@ Tickers: 71  |  Max quarters: 32 (~8 years)
 ============================================================
 
 [  1/71] AAPL
+         -> 32 quarters, 32 with returns
+[  2/71] MSFT
+         -> 19 quarters, 19 with returns
+[  3/71] NVDA
+         -> 3 quarters, 3 with returns
+[  4/71] META
+         -> 6 quarters, 6 with returns
+[  5/71] GOOGL
+         -> 9 quarters, 9 with returns
+[  6/71] AMZN
+         -> 18 quarters, 18 with returns
+[  7/71] TSLA
+         -> 24 quarters, 24 with returns
+[  8/71] NFLX
+         -> 9 quarters, 9 with returns
+[  9/71] AMD
+         -> 13 quarters, 13 with returns
+[ 10/71] ORCL
+         -> 32 quarters, 32 with returns
+[ 11/71] CRM
+         -> 8 quarters, 8 with returns
+[ 12/71] ADBE
+         -> 25 quarters, 25 with returns
+[ 13/71] INTC
+         -> 0 quarters, 0 with returns
+[ 14/71] QCOM
+         -> 24 quarters, 24 with returns
+[ 15/71] TXN
+         -> 25 quarters, 25 with returns
+[ 16/71] AVGO
+         -> 24 quarters, 24 with returns
+[ 17/71] IBM
+         -> 18 quarters, 18 with returns
+[ 18/71] AMAT
+         -> 32 quarters, 32 with returns
+[ 19/71] NOW
+         -> 11 quarters, 11 with returns
+[ 20/71] PANW
+         -> 21 quarters, 21 with returns
+[ 21/71] JPM
+         -> 0 quarters, 0 with returns
+[ 22/71] BAC
+         -> 3 quarters, 3 with returns
+[ 23/71] WFC
+         -> 0 quarters, 0 with returns
+[ 24/71] GS
+         -> 3 quarters, 3 with returns
+[ 25/71] MS
+         -> 0 quarters, 0 with returns
+[ 26/71] C
+         -> 3 quarters, 3 with returns
+[ 27/71] BLK
+         -> 3 quarters, 3 with returns
+[ 28/71] AXP
+         -> 21 quarters, 21 with returns
+[ 29/71] USB
+         -> 6 quarters, 6 with returns
+[ 30/71] PNC
