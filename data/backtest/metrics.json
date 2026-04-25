@@ -149,5 +149,242 @@
       "quarter": "2025-Q4",
       "ls_return": -0.01475
     }
+  ],
+  "fm_beta_mci": 0.005528,
+  "fm_beta_drs": 0.006377,
+  "fm_beta_dmci": -0.000933,
+  "fm_beta_ddrs": -0.004348,
+  "fm_tstat_mci": 0.668,
+  "fm_tstat_drs": 0.908,
+  "fm_tstat_dmci": -0.203,
+  "fm_tstat_ddrs": -1.146,
+  "fm_pval_mci": 0.5289,
+  "fm_pval_drs": 0.3987,
+  "fm_pval_dmci": 0.846,
+  "fm_pval_ddrs": 0.2953,
+  "fm_avg_r2": 0.564,
+  "fm_beta_series": [
+    {
+      "quarter": "2024-Q2",
+      "beta_mci": 0.042686,
+      "beta_drs": 0.027573,
+      "beta_dmci": -0.003539,
+      "beta_ddrs": 0.001531,
+      "r2": 0.7867,
+      "n": 16
+    },
+    {
+      "quarter": "2024-Q3",
+      "beta_mci": -0.011389,
+      "beta_drs": -0.008908,
+      "beta_dmci": -0.000766,
+      "beta_ddrs": 0.000872,
+      "r2": 0.216,
+      "n": 17
+    },
+    {
+      "quarter": "2024-Q4",
+      "beta_mci": -0.004223,
+      "beta_drs": 0.018032,
+      "beta_dmci": 0.010242,
+      "beta_ddrs": -0.012478,
+      "r2": 0.9653,
+      "n": 6
+    },
+    {
+      "quarter": "2025-Q1",
+      "beta_mci": 0.01728,
+      "beta_drs": 0.017199,
+      "beta_dmci": -0.012454,
+      "beta_ddrs": -0.019314,
+      "r2": 0.4925,
+      "n": 19
+    },
+    {
+      "quarter": "2025-Q2",
+      "beta_mci": -0.025132,
+      "beta_drs": -0.024903,
+      "beta_dmci": 0.020248,
+      "beta_ddrs": 0.011,
+      "r2": 0.2735,
+      "n": 19
+    },
+    {
+      "quarter": "2025-Q3",
+      "beta_mci": 0.009598,
+      "beta_drs": -0.000874,
+      "beta_dmci": -0.01204,
+      "beta_ddrs": -0.003664,
+      "r2": 0.4773,
+      "n": 18
+    },
+    {
+      "quarter": "2025-Q4",
+      "beta_mci": 0.009874,
+      "beta_drs": 0.016519,
+      "beta_dmci": -0.008224,
+      "beta_ddrs": -0.008381,
+      "r2": 0.7367,
+      "n": 6
+    }
+  ],
+  "port_ann_return": 0.0272,
+  "port_ann_vol": 0.0261,
+  "port_sharpe": 1.043,
+  "port_max_dd": -0.0075,
+  "port_hit_rate": 0.714,
+  "port_calmar": 3.613,
+  "port_turnover": 0.646,
+  "port_ic_alpha_1d": 0.0626,
+  "port_ic_alpha_5d": 0.0063,
+  "port_equity_curve": [
+    {
+      "quarter": "2024-Q2",
+      "long_ret": 0.03935,
+      "short_ret": 0.01145,
+      "ls_ret": 0.0279,
+      "nav_ls": 1.0279
+    },
+    {
+      "quarter": "2024-Q3",
+      "long_ret": -0.00483,
+      "short_ret": 0.0027,
+      "ls_ret": -0.00753,
+      "nav_ls": 1.02017
+    },
+    {
+      "quarter": "2024-Q4",
+      "long_ret": -0.007,
+      "short_ret": -0.00805,
+      "ls_ret": 0.00105,
+      "nav_ls": 1.02124
+    },
+    {
+      "quarter": "2025-Q1",
+      "long_ret": 0.0068,
+      "short_ret": -0.012,
+      "ls_ret": 0.0188,
+      "nav_ls": 1.04044
+    },
+    {
+      "quarter": "2025-Q2",
+      "long_ret": -0.00333,
+      "short_ret": -0.01475,
+      "ls_ret": 0.01142,
+      "nav_ls": 1.05232
+    },
+    {
+      "quarter": "2025-Q3",
+      "long_ret": -0.0093,
+      "short_ret": -0.00983,
+      "ls_ret": 0.00053,
+      "nav_ls": 1.05287
+    },
+    {
+      "quarter": "2025-Q4",
+      "long_ret": -0.00925,
+      "short_ret": -0.00465,
+      "ls_ret": -0.0046,
+      "nav_ls": 1.04803
+    }
+  ],
+  "ic_decay_mci": [
+    {
+      "label": "1d",
+      "days": 1,
+      "ic": 0.0266,
+      "n": 123
+    },
+    {
+      "label": "5d",
+      "days": 5,
+      "ic": -0.0581,
+      "n": 123
+    },
+    {
+      "label": "30d",
+      "days": 30,
+      "ic": 0.0595,
+      "n": 123
+    }
+  ],
+  "ic_decay_drs": [
+    {
+      "label": "1d",
+      "days": 1,
+      "ic": -0.0764,
+      "n": 123
+    },
+    {
+      "label": "5d",
+      "days": 5,
+      "ic": 0.0448,
+      "n": 123
+    },
+    {
+      "label": "30d",
+      "days": 30,
+      "ic": -0.0783,
+      "n": 123
+    }
+  ],
+  "ic_by_sector": [
+    {
+      "sector": "Energy",
+      "ic": -0.3392,
+      "n": 12
+    },
+    {
+      "sector": "Consumer Staples",
+      "ic": 0.3187,
+      "n": 12
+    },
+    {
+      "sector": "Communication Services",
+      "ic": 0.312,
+      "n": 18
+    },
+    {
+      "sector": "Technology",
+      "ic": -0.192,
+      "n": 30
+    },
+    {
+      "sector": "Unknown",
+      "ic": 0.1049,
+      "n": 12
+    },
+    {
+      "sector": "Health Care",
+      "ic": -0.0499,
+      "n": 12
+    },
+    {
+      "sector": "Financials",
+      "ic": 0.043,
+      "n": 15
+    }
+  ],
+  "ic_by_regime": [
+    {
+      "regime": "bear",
+      "ic": -0.2719,
+      "n": 19
+    },
+    {
+      "regime": "bull",
+      "ic": 0.3957,
+      "n": 18
+    },
+    {
+      "regime": "high_vol",
+      "ic": 0.2311,
+      "n": 57
+    },
+    {
+      "regime": "low_vol",
+      "ic": -0.3304,
+      "n": 29
+    }
   ]
 }
