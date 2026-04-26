@@ -1,49 +1,85 @@
 # EarningsSense
 
-Institutional-grade earnings filing and transcript analysis for retail investors.
+Linguistic factor investing system for earnings-driven equity alpha.
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://earnings-sense.streamlit.app/)
 ![Python](https://img.shields.io/badge/Python-3.11+-blue?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
-Hedge funds pay $50,000-$200,000/year for services like RavenPack and AlphaSense that run NLP on earnings filings before the market opens. EarningsSense replicates the core methodology using public SEC filings, open-source models, and zero paid data.
+Hedge funds pay $50,000–$200,000/year for services like RavenPack and AlphaSense that run NLP on earnings filings before the market opens. EarningsSense replicates the core methodology using public SEC filings, open-source models, and zero paid data — then goes further with institutional-grade signal validation.
 
 ---
 
-## What it does
+## Hypothesis
 
-Pulls text from any company's latest SEC 10-Q or earnings call transcript, runs two analyses, and produces two scores:
+> **Management language in SEC 10-Q filings contains systematic information about future stock returns that is not fully priced by the market at the time of filing.**
 
-**Management Confidence Index (MCI, 0-100)** - how direct and confident management language sounds. Combines FinBERT sentiment with certainty ratio, hedge density, and passive voice.
+Specifically: executives who hedge excessively, use passive voice to avoid accountability, and obscure guidance with vague language tend to precede negative post-earnings price reactions. This is the linguistic equivalent of insider tone — detectable from public filings, hours before the market processes it.
 
-**Deception Risk Score (DRS, 0-100)** - risk signal for evasive or overly hedged language. High DRS means management is hedging heavily, using vague terms, and avoiding accountability.
+The signal is grounded in academic finance. Loughran & McDonald (2011) showed that standard sentiment lexicons misclassify financial language and that financial-specific word lists predict returns. Li (2010) showed that MD&A readability predicts future earnings. We operationalise both into a real-time scoring system with two outputs:
 
-```
-SEC EDGAR 10-Q  -->  FinBERT transformer  -->  Management Confidence Index
-(free, public)       (ProsusAI/finbert)
-                     Loughran-McDonald   -->  Deception Risk Score
-                     linguistic engine
-                     (hedge density,
-                      certainty ratio,
-                      passive voice,
-                      vague language)
+**MCI — Management Confidence Index (0–100)**
+Confident, direct, forward-committed language → high MCI. Hedged, passive, evasive language → low MCI.
 
-Earnings Call   -->  Same pipeline       -->  Prepared Remarks score
-Transcript           + Q&A split              Q&A Session score (separate)
-(FMP API, free)
-```
-
-The app also fetches the actual post-earnings stock return so you can see how the scores tracked price movement.
+**DRS — Deception Risk Score (0–100)**
+High hedge density + passive voice + vague language + negative FinBERT → high DRS.
 
 ---
 
-## Real results
+## Signal Construction
 
-Scores computed by running the pipeline on actual SEC EDGAR 10-Q filings. Next-day returns are close-to-close from earnings date to following trading session.
+```
+SEC EDGAR 10-Q  ──►  MD&A section extraction
+(free, public)        (BeautifulSoup + section header regex)
+                          │
+                          ▼
+                 FinBERT chunked inference     ──►  positive / negative / neutral
+                 (ProsusAI/finbert)
+                          │
+                 Loughran-McDonald engine      ──►  hedge_density
+                 (financial word lists)              certainty_ratio
+                                                     passive_voice_ratio
+                                                     vague_language_score
+                          │
+                          ▼
+         MCI = pos×40 + certainty×25 + (1−hedge)×20 + (1−passive)×15
+         DRS = hedge×40 + passive×30 + neg×20 + vague×10
+                          │
+                          ▼
+         Yahoo Finance prices  ──►  +1d / +5d / +30d post-earnings returns
+```
 
-### Q3 2025 filings
+Earnings call transcripts run the same pipeline, with Q&A section scored separately — management language under analyst questioning tends to be more revealing than prepared remarks.
 
-Earnings reported late October - November 2025.
+---
+
+## Signal Validation (Layer 2)
+
+Built April 2025. Validated across 500+ 10-Q filings from 65 S&P 500 companies spanning up to 8 years of data (2015–2026).
+
+### Fama-MacBeth Factor Test
+
+Each quarter, cross-sectional regression: `return_it = β1·z(MCI) + β2·z(DRS) + β3·z(ΔMCI) + β4·z(ΔDRS) + ε`
+
+Average betas over time with Newey-West standard errors. Tests whether MCI/DRS are **priced factors** — not just correlated with returns in one period, but consistently so across time. `|t| > 1.96` = statistically significant.
+
+### AlphaScore Composite Portfolio
+
+`AlphaScore = z(MCI) − 0.5·z(DRS) + z(ΔMCI) − 0.5·z(ΔDRS)`
+
+Signals z-scored cross-sectionally within each quarter. Long top 20% / short bottom 20% by AlphaScore each quarter. Performance tracked with annualised Sharpe, max drawdown, Calmar ratio, and turnover.
+
+### IC Decay Curves
+
+IC computed at 1d, 5d, and 30d horizons. Measures whether the signal's predictive power decays quickly (noise) or persists (structural).
+
+### Regime & Sector Breakdown
+
+IC split by bull/bear/high-vol/low-vol regimes and by GICS sector. Identifies where the signal works best and controls for sector-wide hedging patterns.
+
+---
+
+## Real Results — Q3 2025 (Oct–Nov 2025 filings)
 
 | Company | MCI | DRS | Hedge / 100w | Next-day return |
 |---------|:---:|:---:|:------------:|:---------------:|
@@ -55,72 +91,168 @@ Earnings reported late October - November 2025.
 | TSLA | 36.5 | 8.7 | 0.49 | +2.3% |
 | **META** | **23.0** | **34.8** | **2.88** | **-11.3%** |
 
-**META's DRS was 34.8 - more than 2x the next-highest company.** Hedge density of 2.88 per 100 words vs. an average of 0.40 for the other six. The filing was loaded with "subject to", "we believe", "may", "uncertain" throughout sections where other filings were direct. The stock dropped 11.3% the following session (Oct 29 close $751.67 -> Oct 30 close $666.47).
+META's DRS was 34.8 — more than 2× the next-highest company. Hedge density of 2.88 per 100 words vs an average of 0.40 for the other six. The filing was saturated with "subject to", "we believe", "may", "uncertain" in sections where other filings were direct. Stock dropped 11.3% the following session.
 
-**The same pattern appeared in Q3 2024:** META's DRS was 34.8 again, and the stock dropped 4.1% (Oct 30 close $588.96 -> Oct 31 close $564.86).
+The same pattern held in Q3 2024: META DRS 34.8 again, stock dropped 4.1%.
 
-**The signal is not perfect.** MSFT had the second-highest MCI in Q3 2025 and still dropped 2.9% - Q1 FY2026 Azure guidance came in mixed. In Q3 2024, MSFT dropped 6.05% (Oct 30 close $427.53 -> Oct 31 close $401.65) despite strong underlying results. Confident language doesn't override guidance disappointments.
+**The signal is not perfect.** MSFT had the second-highest MCI in Q3 2025 and still dropped 2.9% — Azure guidance was mixed. Confident language does not override guidance disappointments.
 
 ---
 
 ## Features
 
 ### Live Analysis
-- Score any US-listed company from its latest **10-Q filing (MD&A)** or **earnings call transcript**
-- For transcripts: **Q&A section scored separately** - reveals if management becomes more evasive under analyst questioning
-- **Multi-quarter MCI/DRS trend chart** - see how confidence has moved over the last 8 quarters
-- **Sector benchmark** - compare MCI/DRS to sector average from previously scanned tickers
-- **Guidance Score** - forward-looking statement confidence (from `guidance.py`)
-- **Key guidance phrases** - notable forward-looking sentences extracted from the text
-- **YoY delta** - automatic comparison to the prior quarter in the local database
-- **EPS actual vs. estimate chart** - when using transcript mode with an FMP key
-- **PDF export** - download the full analysis result
+- Score any US-listed company from its latest **10-Q filing** or **earnings call transcript**
+- Transcripts: **Q&A section scored separately** — reveals evasion under analyst pressure
+- **MCI/DRS gauges**, FinBERT sentiment bar, linguistic radar chart
+- **Multi-quarter trend chart** — see how tone has shifted over up to 8 quarters
+- **Sector benchmark** — vs average of all previously scanned companies in same sector
+- **Guidance Score** (0–100) from forward-looking statement analysis
+- **Key guidance phrases** — notable forward-looking sentences extracted and highlighted
+- **YoY delta** — automatic trend classification (Improving / Deteriorating / Stable / Mixed)
+- **EPS actual vs. estimate chart** (transcript mode with FMP key)
+- **Post-earnings price chart** — 60-day window centred on earnings date
+- **PDF export** — full report download
 
 ### Market Scan
-- Auto-scans a configurable watchlist of tickers on load
-- Ranks all results by Deception Risk Score
-- Sector breakdown showing avg MCI/DRS per GICS sector
-- **Watchlist save/load** - persist your ticker list to SQLite and reload in one click
+- Auto-scans configurable watchlist on load, no manual trigger needed
+- Ranked by DRS — highest risk at top
+- Summary: avg DRS, high-risk count, confident-filing count
+- **Sector breakdown** — avg MCI/DRS per GICS sector across the scan
+- Watchlist save/load to SQLite
 
 ### Compare
-- Side-by-side analysis of two tickers from their latest 10-Q filings
-- Full metric table, gauges, sentiment bars, linguistic radars, and guidance phrases for both
+- Side-by-side full analysis of two tickers
+- Full metric table, dual gauges, sentiment bars, radar charts, guidance phrases
+- Summary callout: which company has more confident language / lower deception risk
+
+### Backtest & Signal Validation
+- **IC / ICIR** (1d + 5d) per quarter — Spearman rank correlation between signal and return
+- **Tone-shift IC** — ΔMCI / ΔDRS vs prior quarter, tests if changes beat levels
+- **Volatility target** — does evasive language predict post-earnings vol spikes?
+- **Long-short simulation** — quarterly L/S tercile equity curve and Sharpe
+- **Fama-MacBeth regression** — cross-sectional betas + t-stats (priced factor test)
+- **AlphaScore portfolio** — composite L/S 20% with drawdown, Calmar, turnover
+- **IC decay curves** — signal persistence from 1d → 5d → 30d
+- **IC by sector** — where does the signal work?
+- **IC by regime** — bull / bear / high-vol / low-vol breakdown
+- **OLS regression** — MCI/DRS coefficient significance with R²
+- **Ridge + Random Forest** — out-of-sample R², feature importance ranking
+- Raw data table (all scored filings)
 
 ---
 
-## Linguistic signals
+## Linguistic Signals
 
-| Signal | What it measures |
-|--------|-----------------|
-| Hedge density | Hedging phrases per 100 words - "we believe", "may", "subject to", "approximately" |
-| Certainty ratio | Strong affirmatives / (hedges + 1) - "will deliver", "committed", "record" |
-| Passive voice ratio | Fraction of sentences in passive voice - accountability-avoidance signal |
-| Vague language score | Vague terms per 100 words - "various", "significant", "certain ongoing challenges" |
-| FinBERT sentiment | Positive / negative / neutral from BERT fine-tuned on 10,000+ financial documents |
-| Guidance Score | Forward-looking statement confidence based on positive vs. negative guidance language |
+| Signal | What it measures | High value means |
+|--------|-----------------|-----------------|
+| Hedge density | Hedging phrases per 100 words | Management uncertain, covering downside |
+| Certainty ratio | Certainty words / (hedges + 1) | Management committed and direct |
+| Passive voice ratio | Passive sentences / total sentences | Avoiding accountability |
+| Vague language score | Vague terms per 100 words | Obscuring specifics |
+| FinBERT sentiment | Positive / negative / neutral probability | Overall tone from finance-trained model |
+| Guidance Score | Positive vs negative forward-looking language | Optimistic / pessimistic about future |
 
-Academic basis: Loughran & McDonald (2011) *Journal of Finance*, Li (2010) *Journal of Accounting Research*, Araci (2019) *arXiv:1908.10063*
+**Academic basis:**
+- Loughran & McDonald (2011) — *Journal of Finance* — financial-specific word lists predict returns
+- Li (2010) — *Journal of Accounting Research* — MD&A readability predicts earnings
+- Araci (2019) — *arXiv:1908.10063* — FinBERT: financial sentiment analysis with BERT
+- Fama & MacBeth (1973) — *Journal of Political Economy* — cross-sectional factor pricing
 
 ---
 
-## Tech stack
+## Architecture
+
+```
+┌─────────────────────────────────┐
+│   DATA INGESTION                │
+│   EDGAR / FMP / Yahoo / SQLite  │
+└──────────────┬──────────────────┘
+               ▼
+┌─────────────────────────────────┐
+│   NLP FEATURE ENGINE            │
+│   FinBERT + Loughran-McDonald   │
+└──────────────┬──────────────────┘
+               ▼
+┌─────────────────────────────────┐  Layer 1
+│   SIGNAL LAYER                  │  Alpha Engine
+│   MCI / DRS / ΔMCI / ΔDRS      │
+│   Guidance Score / Tone-shift   │
+└──────────────┬──────────────────┘
+               ▼
+┌─────────────────────────────────┐  Layer 1
+│   BACKTEST ENGINE               │
+│   IC, ICIR, L/S, Ridge, RF      │
+└──────────────┬──────────────────┘
+               ▼
+┌─────────────────────────────────┐  Layer 2
+│   FACTOR VALIDATION             │  Institutional Proof
+│   Fama-MacBeth / AlphaScore     │
+│   IC decay / Sector / Regime    │
+└──────────────┬──────────────────┘
+               ▼
+┌─────────────────────────────────┐
+│   REPORTING                     │
+│   Streamlit / PDF / Rankings    │
+└─────────────────────────────────┘
+```
+
+---
+
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
 | Language model | ProsusAI/finbert (HuggingFace Transformers + PyTorch) |
-| Filing data | SEC EDGAR REST API - free, no key required |
-| Transcript data | FinancialModelingPrep API - free tier (250 req/day, key required) |
-| Price data | Yahoo Finance HTTP API |
-| Earnings data | FinancialModelingPrep API (EPS actual vs. estimate) |
-| Dashboard | Streamlit |
+| Word lists | Loughran-McDonald Financial Sentiment Dictionary |
+| Filing data | SEC EDGAR REST API — free, no key required |
+| Transcript data | FinancialModelingPrep API — free tier (250 req/day) |
+| Price data | Yahoo Finance HTTP API — no library, direct requests |
+| Dashboard | Streamlit multi-page app |
 | Charts | Plotly (dark theme, interactive) |
-| Database | SQLite (MCI history, watchlist) |
-| Statistics | NumPy + SciPy |
-| Testing | pytest |
+| Database | SQLite — MCI/DRS history, watchlist, sector benchmarks |
+| Statistics | NumPy, SciPy, statsmodels (OLS, Fama-MacBeth) |
+| ML | scikit-learn (RidgeCV, RandomForest, StandardScaler) |
+| PDF export | reportlab |
 
 ---
 
-## Getting started
+## Project Structure
+
+```
+├── app.py                          Landing page + navigation
+├── requirements.txt
+├── pages/
+│   ├── 0_Market_Scan.py            Auto-scan + sector breakdown + watchlist
+│   ├── 1_Live_Analysis.py          Single-ticker deep analysis + PDF export
+│   ├── 2_Compare.py                Side-by-side two-ticker comparison
+│   └── 3_Backtest.py               Full signal validation dashboard (Layer 1 + 2)
+├── scripts/
+│   └── run_backtest.py             65-ticker 8-year batch data collection script
+└── src/
+    ├── data/
+    │   ├── edgar.py                SEC EDGAR fetcher + MD&A extractor
+    │   ├── transcripts.py          FMP transcript fetcher + EPS surprise data
+    │   ├── prices.py               Post-earnings return calculator (Yahoo Finance)
+    │   └── sectors.py              GICS sector classification (200+ tickers)
+    ├── analysis/
+    │   ├── sentiment.py            FinBERT chunked inference
+    │   ├── linguistics.py          Hedge / certainty / passive / vague extractor
+    │   ├── signals.py              MCI + DRS formula
+    │   ├── guidance.py             Forward-looking statement detector + YoY delta
+    │   ├── backtest_engine.py      Full Layer 1+2 metrics engine
+    │   ├── fama_macbeth.py         Fama-MacBeth cross-sectional regression
+    │   └── portfolio.py            AlphaScore portfolio + IC decay/sector/regime
+    ├── visualization/
+    │   ├── charts.py               Plotly chart builders
+    │   └── report_pdf.py           PDF report generator (reportlab)
+    └── db/
+        └── database.py             SQLite store
+```
+
+---
+
+## Getting Started
 
 ```bash
 git clone https://github.com/3liasss/Earnings-Sense-.git
@@ -129,77 +261,34 @@ pip install -r requirements.txt
 streamlit run app.py
 ```
 
-First run downloads FinBERT (~440 MB) from HuggingFace Hub. Cached after that.
+First run downloads FinBERT (~440 MB) from HuggingFace. Cached after that.
 
-**Optional: earnings call transcripts + EPS data**
+**Optional — earnings call transcripts + EPS data:**
 
-Create `.streamlit/secrets.toml`:
 ```toml
+# .streamlit/secrets.toml
 FMP_API_KEY = "your_free_key_here"
 ```
+
 Free key at [financialmodelingprep.com](https://financialmodelingprep.com/developer/docs/). 250 requests/day on the free tier.
 
-**Run a live analysis:**
-1. Open `http://localhost:8501`
-2. Go to Live Analysis
-3. Select source (10-Q or Transcript), enter any US ticker, hit Analyze
+**Run the full backtest (65 tickers × 8 years):**
 
-**Market Scan:**
-- Loads the latest 10-Q for 10 default tickers on open
-- Ranks by Deception Risk Score
-- Use Save/Load in the sidebar to persist your ticker list
-
-**Compare:**
-- Enter two tickers for side-by-side scoring
+```bash
+python scripts/run_backtest.py
+# Takes 30-60 min. Safe to interrupt — cached per filing.
+# Results saved to data/backtest/results.csv + metrics.json
+```
 
 ---
 
 ## Limitations
 
-Read this before drawing any conclusions:
-
-- **n is small.** The table above covers 7 companies for one quarter. Any correlation observed is directionally interesting, not statistically conclusive. More data needed before making any trading claims.
-
-- **10-Qs are more legalistic than transcripts.** The MD&A section is drafted by lawyers and reviewed multiple times. Earnings call transcripts (especially Q&A) tend to show more natural hedging patterns. When precision matters, prefer the transcript source.
-
-- **Language is not fundamentals.** MSFT had the second-highest MCI in Q3 2025 and still dropped 2.9% because Azure guidance was mixed. In Q3 2024 MSFT dropped 6.05% for the same reason. Confident language does not save a stock when guidance disappoints.
-
-- **TSLA is an outlier.** Moves are driven by delivery numbers and Musk commentary, not MD&A language. It consistently breaks the signal.
-
-- **No real-time data.** SEC filings are published after market close. This is a same-evening signal for next-day positioning, not a pre-earnings tool.
-
-- **Not forward-tested.** These results were computed on historical data. The signal may not hold out-of-sample.
-
----
-
-## Project structure
-
-```
-earningssense/
-├── app.py                      Streamlit entry point + landing page
-├── requirements.txt
-├── assets/
-├── pages/
-│   ├── 0_Market_Scan.py        Auto-scans watchlist on load, sector breakdown, watchlist save/load
-│   ├── 1_Live_Analysis.py      Analyze any ticker (10-Q or transcript), trend chart, export
-│   └── 2_Compare.py            Side-by-side comparison of two tickers
-└── src/
-    ├── data/
-    │   ├── edgar.py             SEC EDGAR 10-Q fetcher + MD&A extractor
-    │   ├── transcripts.py       FMP earnings call transcript fetcher + EPS surprise data
-    │   ├── prices.py            Post-earnings return calculator
-    │   ├── filing_calendar.py   10-Q deadline tracker
-    │   └── sectors.py           Sector classification (GICS)
-    ├── analysis/
-    │   ├── sentiment.py         FinBERT chunked inference engine
-    │   ├── linguistics.py       Hedge / certainty / passive / vague extractor
-    │   ├── signals.py           MCI + DRS scoring
-    │   └── guidance.py          Forward-looking statement detector + YoY delta
-    ├── visualization/
-    │   └── charts.py            Plotly chart builders (gauges, radar, trend, surprise)
-    └── db/
-        └── database.py          SQLite store (MCI history, watchlist, sector benchmarks)
-```
+- **Sample size.** Statistical significance requires 500+ observations. At fewer observations, IC and FM t-stats are directionally interesting but not conclusive. The full 8-year backtest provides the necessary depth.
+- **10-Qs are lawyered.** MD&A is reviewed multiple times before filing. Earnings call transcripts (especially Q&A) reveal more natural hedging patterns.
+- **Language ≠ fundamentals.** A confident filing does not override guidance disappointments or macro headwinds. The signal is one input, not a trading system.
+- **No real-time data.** Filings are published after market close. This is a post-close signal for next-session positioning.
+- **No transaction costs modelled.** The backtest does not include bid-ask spread, market impact, or borrowing costs for short positions.
 
 ---
 
