@@ -174,6 +174,8 @@ with st.sidebar:
     **About EarningsSense**
 
     Institutional-grade earnings intelligence - free and open-source.
+    Built by Elias Wächter.
+
     Models & methods:
     - [FinBERT](https://arxiv.org/abs/1908.10063) (Araci, 2019)
     - [Loughran-McDonald word lists](https://sraf.nd.edu/loughranmcdonald-master-dictionary/)
@@ -181,6 +183,9 @@ with st.sidebar:
 
     Built with Python · Streamlit · Plotly · HuggingFace Transformers
     """)
+
+from src.ui.sidebar import inject_sidebar_style
+inject_sidebar_style()
 
 
 # ── Load data ─────────────────────────────────────────────────────────────────
@@ -193,7 +198,7 @@ if selected_file:
 if data is None:
     # ── Landing page ──────────────────────────────────────────────────────────
     st.markdown("## EarningsSense")
-    st.markdown("<div style='color:#94a3b8;margin-bottom:1.5rem;'>FinBERT + Loughran-McDonald NLP on SEC 10-Q filings.</div>", unsafe_allow_html=True)
+    st.markdown("<div style='color:#94a3b8;margin-bottom:1.5rem;'>FinBERT + Loughran-McDonald NLP on SEC 10-Q filings. Built by Elias Wächter.</div>", unsafe_allow_html=True)
 
     # Hero stats
     c1, c2, c3 = st.columns(3)
@@ -451,8 +456,8 @@ if price_series and earn_dt:
 
 st.markdown("""
 <div style='text-align:center; color:#334155; font-size:0.8rem; padding:1rem 0;'>
-EarningsSense · FinBERT + Loughran-McDonald NLP on SEC 10-Q filings ·
-Built with FinBERT, SEC EDGAR, Yahoo Finance, Streamlit, Plotly
+EarningsSense · Built by Elias Wächter ·
+FinBERT + Loughran-McDonald NLP · SEC EDGAR · Streamlit · Plotly
 <br>
 Academic references: Araci (2019) · Loughran & McDonald (2011) · Li (2010) · Rogers et al. (2011)
 </div>

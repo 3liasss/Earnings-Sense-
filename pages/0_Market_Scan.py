@@ -16,6 +16,9 @@ st.set_page_config(
     layout="wide",
 )
 
+from src.ui.sidebar import inject_sidebar_style
+inject_sidebar_style()
+
 st.markdown("""
 <style>
 .block-container { padding-top: 1.5rem; }
@@ -86,6 +89,19 @@ with st.sidebar:
             f"{'...' if len(saved_wl) > 6 else ''}</div>",
             unsafe_allow_html=True,
         )
+
+    st.markdown("---")
+    st.markdown(
+        "<div style='font-size:.8rem;line-height:1.7;'>"
+        "<span style='color:#64748b;font-weight:600;'>EarningsSense</span><br>"
+        "<span style='color:#475569;'>Built by Elias Wächter</span><br>"
+        "<span style='color:#334155;font-size:.73rem;'>FinBERT · Loughran-McDonald · SEC EDGAR</span><br><br>"
+        "<a href='https://github.com/3liasss/Earnings-Sense-' style='color:#3b82f6;text-decoration:none;'>GitHub</a>"
+        " &nbsp;·&nbsp; "
+        "<a href='https://earnings-sense.streamlit.app' style='color:#3b82f6;text-decoration:none;'>Live app</a>"
+        "</div>",
+        unsafe_allow_html=True,
+    )
 
 # ── Auto-run on first load ────────────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 # EarningsSense
 
-NLP system for analysing earnings filings and scoring management language.
+NLP system for analysing earnings filings and scoring management language. Built by Elias Wächter.
 
 [![Open in Streamlit](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://earnings-sense.streamlit.app/)
 ![Python](https://img.shields.io/badge/Python-3.11+-blue?style=flat-square)

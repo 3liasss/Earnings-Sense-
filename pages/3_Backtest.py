@@ -18,6 +18,10 @@ import streamlit as st
 
 st.set_page_config(page_title="Backtest - EarningsSense", layout="wide")
 
+from src.ui.sidebar import inject_sidebar_style, render_sidebar_branding
+inject_sidebar_style()
+render_sidebar_branding()
+
 st.markdown("""
 <style>
 .block-container { padding-top: 1.5rem; }

@@ -19,6 +19,9 @@ st.set_page_config(
     layout="wide",
 )
 
+from src.ui.sidebar import inject_sidebar_style, render_sidebar_branding
+inject_sidebar_style()
+
 st.markdown("""
 <style>
 .block-container { padding-top: 1.5rem; }
@@ -29,6 +32,8 @@ st.markdown("""
 h1,h2,h3 { color: #f1f5f9 !important; }
 </style>
 """, unsafe_allow_html=True)
+
+render_sidebar_branding()
 
 st.title("Live Analysis")
 st.markdown(
