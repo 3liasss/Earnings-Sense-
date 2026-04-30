@@ -18,37 +18,28 @@ import streamlit as st
 
 st.set_page_config(page_title="Backtest - EarningsSense", layout="wide")
 
-from src.ui.sidebar import inject_sidebar_style, render_sidebar_branding
-inject_sidebar_style()
+from src.ui.sidebar import render_sidebar_branding
+from src.ui.theme   import base_css, C
+
+# CSS first, then sidebar branding (fixes injection order)
 render_sidebar_branding()
+st.markdown(base_css(), unsafe_allow_html=True)
 
-st.markdown("""
-<style>
-.block-container { padding-top: 1.5rem; }
-.metric-card {
-    background: #1e293b; border: 1px solid #334155;
-    border-radius: 12px; padding: 1rem 1.25rem; margin-bottom: 0.75rem;
-    text-align: center;
-}
-.section-header {
-    color: #f1f5f9; font-size: 1.1rem; font-weight: 600;
-    margin: 1.25rem 0 0.4rem 0;
-}
-h1,h2,h3 { color: #f1f5f9 !important; }
-</style>
-""", unsafe_allow_html=True)
+c_theme = C()
 
+# Backtest-specific chart colors still use fixed values for consistency
+# across rerenders; signals have semantic meaning regardless of theme
 COLORS = {
-    "mci":     "#3b82f6",
-    "drs":     "#ef4444",
-    "hedge":   "#f97316",
-    "ridge":   "#a855f7",
+    "mci":     c_theme["blue"],
+    "drs":     c_theme["red"],
+    "hedge":   c_theme["amber"],
+    "ridge":   c_theme["violet"],
     "rf":      "#10b981",
-    "surface": "#1e293b",
-    "border":  "#334155",
-    "green":   "#22c55e",
-    "muted":   "#94a3b8",
-    "bg":      "#0f172a",
+    "surface": c_theme["surface"],
+    "border":  c_theme["border"],
+    "green":   c_theme["green"],
+    "muted":   c_theme["muted"],
+    "bg":      c_theme["bg"],
 }
 
 RESULTS_CSV  = Path("data/backtest/results.csv")
@@ -56,10 +47,11 @@ METRICS_JSON = Path("data/backtest/metrics.json")
 
 st.title("Signal Validation - Backtest")
 st.markdown(
-    "<div style='color:#94a3b8;margin-bottom:1rem;'>"
-    "Research-grade signal quality metrics computed across S&amp;P 500 10-Q filings "
+    f"<div style='color:{c_theme['subtext']};margin-bottom:1rem;'>"
+    "Research-grade signal quality metrics across S&amp;P 500 10-Q filings "
     "(8 years · 65 tickers · 32 quarters max). "
-    "IC, ICIR, tone-shift, volatility target, Ridge + Random Forest.</div>",
+    "IC, ICIR, tone-shift, volatility target, Ridge + Random Forest. "
+    "<strong>Work in progress</strong> - still building this out.</div>",
     unsafe_allow_html=True,
 )
 
