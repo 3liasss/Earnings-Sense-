@@ -73,11 +73,6 @@ def confidence_gauges(mci: float, drs: float) -> go.Figure:
                 "borderwidth": 1,
                 "bordercolor": c["border"],
                 "steps":       steps,
-                "threshold": {
-                    "line":      {"color": bar_color, "width": 3},
-                    "thickness": 0.8,
-                    "value":     value,
-                },
             },
         )
 
@@ -427,3 +422,187 @@ def backtest_scatter(samples: list[dict], pearson_r: float, p_value: float) -> g
         **plotly_layout(height=400),
     )
     return fig
+
+
+# ── Compare: dual-trace radar ─────────────────────────────────────────────────
+
+def linguistic_radar_compare(
+    hedge1: float, certainty1: float, passive1: float, vague1: float, label1: str,
+    hedge2: float, certainty2: float, passive2: float, vague2: float, label2: str,
+) -> go.Figure:
+    """Single radar with both tickers overlaid for direct comparison."""
+    c = C()
+    dark = is_dark()
+
+    def norm(v, cap): return min(v / cap, 1.0) * 100
+
+    cats = ["Hedge Density", "Certainty Ratio", "Passive Voice", "Vague Language",
+            "Hedge Density"]
+
+    vals1 = [norm(hedge1, 5.0), norm(certainty1, 5.0),
+             norm(passive1, 0.5), norm(vague1, 3.0), norm(hedge1, 5.0)]
+    vals2 = [norm(hedge2, 5.0), norm(certainty2, 5.0),
+             norm(passive2, 0.5), norm(vague2, 3.0), norm(hedge2, 5.0)]
+
+    fig = go.Figure()
+    for vals, label, color, alpha in [
+        (vals1, label1, c["blue"],  "0.18" if dark else "0.12"),
+        (vals2, label2, c["amber"], "0.18" if dark else "0.12"),
+    ]:
+        fig.add_trace(go.Scatterpolar(
+            r=vals, theta=cats, fill="toself",
+            fillcolor=f"rgba({int(color[1:3],16)},{int(color[3:5],16)},{int(color[5:7],16)},{alpha})",
+            line=dict(color=color, width=2),
+            name=label,
+            hovertemplate="<b>%{theta}</b>: %{r:.1f}/100<extra></extra>",
+        ))
+
+    fig.update_layout(
+        polar=dict(
+            bgcolor=c["surface"],
+            radialaxis=dict(visible=True, range=[0, 110],
+                           tickfont={"color": c["muted"], "size": 8},
+                           gridcolor=c["border"], linecolor=c["border"],
+                           tickvals=[25, 50, 75, 100],
+                           ticktext=["25", "50", "75", "100"]),
+            angularaxis=dict(tickfont={"color": c["subtext"], "size": 11},
+                            gridcolor=c["border"], linecolor=c["border"]),
+        ),
+        showlegend=True,
+        legend=dict(font={"color": c["subtext"]},
+                   orientation="h", yanchor="bottom", y=1.05,
+                   xanchor="center", x=0.5),
+        title={"text": "Linguistic profile overlay",
+               "font": {"size": 12, "color": c["muted"]}},
+        **plotly_layout(height=360),
+    )
+    return fig
+
+
+# ── IC time-series stability chart ────────────────────────────────────────────
+
+def ic_stability_chart(beta_series: list[dict]) -> go.Figure:
+    """
+    Shows quarterly IC / beta_mci over time with a rolling mean band.
+    Helps assess whether the factor is stable or regime-dependent.
+    """
+    c = C()
+    if not beta_series:
+        return go.Figure()
+
+    quarters   = [d["quarter"]  for d in beta_series]
+    beta_mci   = [d["beta_mci"] for d in beta_series]
+    beta_drs   = [d["beta_drs"] for d in beta_series]
+
+    fig = go.Figure()
+    fig.add_hline(y=0, line_dash="dot", line_color=c["border"], line_width=1)
+
+    fig.add_trace(go.Scatter(
+        x=quarters, y=beta_mci,
+        mode="lines+markers",
+        line=dict(color=c["blue"], width=2),
+        marker=dict(size=6, color=c["blue"], line=dict(color=c["surface"], width=1.5)),
+        name="β MCI",
+        hovertemplate="<b>%{x}</b><br>β MCI: %{y:.4f}<extra></extra>",
+    ))
+    fig.add_trace(go.Scatter(
+        x=quarters, y=beta_drs,
+        mode="lines+markers",
+        line=dict(color=c["red"], width=2, dash="dot"),
+        marker=dict(size=6, color=c["red"], line=dict(color=c["surface"], width=1.5)),
+        name="β DRS",
+        hovertemplate="<b>%{x}</b><br>β DRS: %{y:.4f}<extra></extra>",
+    ))
+
+    fig.update_layout(
+        xaxis=dict(showgrid=True, gridcolor=c["border"],
+                   tickfont={"color": c["muted"], "size": 10},
+                   tickangle=-45),
+        yaxis=dict(showgrid=True, gridcolor=c["border"],
+                   tickfont={"color": c["muted"], "size": 10},
+                   zeroline=False),
+        legend=dict(font={"color": c["subtext"]},
+                   orientation="h", yanchor="bottom", y=1.02,
+                   xanchor="right", x=1),
+        title={"text": "Cross-sectional beta stability by quarter",
+               "font": {"size": 12, "color": c["muted"]}},
+        **plotly_layout(height=280),
+    )
+    return fig
+
+
+# ── Sector distribution mini-chart ────────────────────────────────────────────
+
+def sector_distribution_chart(
+    ticker_val: float,
+    ticker_name: str,
+    sector_vals: list[float],
+    metric: str = "DRS",
+) -> go.Figure:
+    """
+    Shows where this ticker sits in the sector distribution.
+    Simple dot-on-strip chart.
+    """
+    c = C()
+    if not sector_vals:
+        return go.Figure()
+
+    rng = np.random.default_rng(42)
+    y_jitter = rng.uniform(-0.3, 0.3, len(sector_vals))
+
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(
+        x=sector_vals, y=list(y_jitter),
+        mode="markers",
+        marker=dict(color=c["muted"], size=8, opacity=0.6,
+                   line=dict(color=c["border"], width=1)),
+        name="Sector peers",
+        hovertemplate=f"<b>Sector peer</b><br>{metric}: %{{x:.1f}}<extra></extra>",
+    ))
+
+    # This ticker highlighted
+    fig.add_trace(go.Scatter(
+        x=[ticker_val], y=[0],
+        mode="markers+text",
+        marker=dict(color=c["blue"], size=14,
+                   symbol="diamond",
+                   line=dict(color=c["text"], width=2)),
+        text=[ticker_name],
+        textposition="top center",
+        textfont={"color": c["text"], "size": 11, "family": "Inter, sans-serif"},
+        name=ticker_name,
+        hovertemplate=f"<b>{ticker_name}</b><br>{metric}: %{{x:.1f}}<extra></extra>",
+    ))
+
+    # Median line
+    med = float(_np.median(sector_vals))
+    fig.add_vline(x=med, line_dash="dot", line_color=c["amber"], line_width=1.5,
+                  annotation_text=f"median {med:.1f}",
+                  annotation_font={"color": c["amber"], "size": 10})
+
+    fig.update_layout(
+        xaxis=dict(title=metric, showgrid=True, gridcolor=c["border"],
+                   tickfont={"color": c["muted"], "size": 10}),
+        yaxis=dict(visible=False, range=[-1, 1]),
+        showlegend=True,
+        legend=dict(font={"color": c["subtext"]}, orientation="h",
+                   yanchor="bottom", y=1.02, xanchor="right", x=1),
+        title={"text": f"{ticker_name} vs sector peers - {metric}",
+               "font": {"size": 12, "color": c["muted"]}},
+        **plotly_layout(height=200),
+    )
+    return fig
+
+
+# ── Unicode sparkline helper ──────────────────────────────────────────────────
+
+def sparkline(values: list[float]) -> str:
+    """Return a unicode block-character sparkline for a list of values."""
+    blocks = "▁▂▃▄▅▆▇█"
+    if not values or len(values) < 2:
+        return "─"
+    lo, hi = min(values), max(values)
+    if hi == lo:
+        return "▄" * len(values)
+    norm = [(v - lo) / (hi - lo) for v in values]
+    return "".join(blocks[min(int(n * len(blocks)), len(blocks) - 1)] for n in norm)
