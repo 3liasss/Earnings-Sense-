@@ -195,57 +195,64 @@ if data is None:
         unsafe_allow_html=True,
     )
 
-    from src.data.filing_calendar import get_all_upcoming
-    from datetime import date as _date
+    try:
+        from src.data.filing_calendar import get_all_upcoming
+        from datetime import date as _date
 
-    DEFAULT_TICKERS_LAND = [
-        "NVDA", "MSFT", "META", "AMZN", "GOOGL",
-        "AAPL", "TSLA", "NFLX", "AMD", "ORCL",
-    ]
-    upcoming = get_all_upcoming(DEFAULT_TICKERS_LAND)
-    today    = _date.today()
+        DEFAULT_TICKERS_LAND = [
+            "NVDA", "MSFT", "META", "AMZN", "GOOGL",
+            "AAPL", "TSLA", "NFLX", "AMD", "ORCL",
+        ]
+        upcoming = get_all_upcoming(DEFAULT_TICKERS_LAND)
+        today    = _date.today()
 
-    fc1, fc2 = st.columns(2)
-    cols_cycle = [fc1, fc2]
+        fc1, fc2 = st.columns(2)
+        cols_cycle = [fc1, fc2]
 
-    STATUS_COLOR = {
-        "IMMINENT":   c["red"],
-        "THIS MONTH": c["amber"],
-        "UPCOMING":   c["blue"],
-        "OVERDUE":    c["muted"],
-    }
+        STATUS_COLOR = {
+            "IMMINENT":   c["red"],
+            "THIS MONTH": c["amber"],
+            "UPCOMING":   c["blue"],
+            "OVERDUE":    c["muted"],
+        }
 
-    for i, r in enumerate(upcoming):
-        col         = cols_cycle[i % 2]
-        sc          = STATUS_COLOR.get(r["status"], c["muted"])
-        days_gone   = (today - r["quarter_end"]).days if r["in_window"] else 0
-        pct_elapsed = max(0, min(100, int(days_gone / 40 * 100))) if r["in_window"] else 0
-        bar_color   = c["red"] if pct_elapsed > 75 else (c["amber"] if pct_elapsed > 40 else c["blue"])
-        window_text = f"in 40-day filing window ({pct_elapsed}% elapsed)" if r["in_window"] else ""
+        for i, r in enumerate(upcoming):
+            col         = cols_cycle[i % 2]
+            sc          = STATUS_COLOR.get(r["status"], c["muted"])
+            days_gone   = (today - r["quarter_end"]).days if r["in_window"] else 0
+            pct_elapsed = max(0, min(100, int(days_gone / 40 * 100))) if r["in_window"] else 0
+            bar_color   = c["red"] if pct_elapsed > 75 else (c["amber"] if pct_elapsed > 40 else c["blue"])
+            window_text = f"in 40-day filing window ({pct_elapsed}% elapsed)" if r["in_window"] else ""
 
-        with col:
-            st.markdown(
-                f"<div class='es-card-sm' style='border-left:3px solid {sc};'>"
-                f"<div style='display:flex;justify-content:space-between;align-items:center;'>"
-                f"<div>"
-                f"<span style='font-weight:700;color:{c['text']};font-size:.9rem;'>{r['ticker']}</span>"
-                f"<span style='color:{c['muted']};font-size:.72rem;margin-left:.5rem;'>"
-                f"due {r['filing_due'].strftime('%b %d')}"
-                f"{' - ' + window_text if window_text else ''}"
-                f"</span>"
-                f"</div>"
-                f"<span style='color:{sc};font-size:.82rem;font-weight:700;'>"
-                f"{r['days_to_due']}d</span>"
-                f"</div>"
-                + (
-                    f"<div style='background:{c['border']};border-radius:2px;height:3px;margin-top:.4rem;'>"
-                    f"<div style='background:{bar_color};width:{pct_elapsed}%;height:3px;"
-                    f"border-radius:2px;'></div></div>"
-                    if r["in_window"] else ""
+            with col:
+                st.markdown(
+                    f"<div class='es-card-sm' style='border-left:3px solid {sc};'>"
+                    f"<div style='display:flex;justify-content:space-between;align-items:center;'>"
+                    f"<div>"
+                    f"<span style='font-weight:700;color:{c['text']};font-size:.9rem;'>{r['ticker']}</span>"
+                    f"<span style='color:{c['muted']};font-size:.72rem;margin-left:.5rem;'>"
+                    f"due {r['filing_due'].strftime('%b %d')}"
+                    f"{' - ' + window_text if window_text else ''}"
+                    f"</span>"
+                    f"</div>"
+                    f"<span style='color:{sc};font-size:.82rem;font-weight:700;'>"
+                    f"{r['days_to_due']}d</span>"
+                    f"</div>"
+                    + (
+                        f"<div style='background:{c['border']};border-radius:2px;height:3px;margin-top:.4rem;'>"
+                        f"<div style='background:{bar_color};width:{pct_elapsed}%;height:3px;"
+                        f"border-radius:2px;'></div></div>"
+                        if r["in_window"] else ""
+                    )
+                    + "</div>",
+                    unsafe_allow_html=True,
                 )
-                + "</div>",
-                unsafe_allow_html=True,
-            )
+    except Exception:
+        st.markdown(
+            f"<div style='color:{c['muted']};font-size:.8rem;'>"
+            f"Filing calendar unavailable - use Live Analysis to check any ticker.</div>",
+            unsafe_allow_html=True,
+        )
 
     st.markdown("<br>", unsafe_allow_html=True)
     st.markdown(
