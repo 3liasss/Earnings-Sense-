@@ -105,6 +105,7 @@ def base_css() -> str:
 /* ── Reset & base ──────────────────────────────────────────── */
 .stApp {{
     background-color: {c['bg']} !important;
+    transition: background-color 0.18s ease, color 0.18s ease;
 }}
 [data-testid="stSidebar"],
 .stSidebar {{
@@ -132,6 +133,7 @@ h1, h2, h3 {{
     border-radius: 10px;
     padding:       1rem 1.25rem;
     margin-bottom: 0.75rem;
+    transition:    background 0.18s ease, border-color 0.18s ease;
 }}
 .es-card-sm {{
     background:    {c['surface']};

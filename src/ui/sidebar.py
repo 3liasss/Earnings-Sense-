@@ -10,24 +10,27 @@ def inject_theme_css() -> None:
 
 def render_sidebar_branding() -> None:
     """
-    Call once per page, after set_page_config.
-    Injects theme CSS and renders the bottom sidebar branding + theme toggle.
+    Call once per page right after set_page_config.
+    Puts the dark/light toggle at the very top of the sidebar,
+    then injects CSS, then renders the bottom branding block.
     """
-    inject_theme_css()
-
-    c = C()
-    dark = get_theme() == "dark"
-
+    # Toggle is rendered first so it appears above all page-specific content
     with st.sidebar:
-        # Theme toggle at top of sidebar
-        tcol1, tcol2 = st.columns([1, 3])
-        with tcol1:
-            toggled = st.toggle("", value=dark, key="_theme_toggle",
-                                label_visibility="collapsed",
-                                help="Toggle dark / light mode")
-        with tcol2:
+        c = C()
+        dark = get_theme() == "dark"
+
+        tog_col, label_col = st.columns([1, 4])
+        with tog_col:
+            toggled = st.toggle(
+                "",
+                value=dark,
+                key="_theme_toggle",
+                label_visibility="collapsed",
+                help="Dark / light mode",
+            )
+        with label_col:
             st.markdown(
-                f"<div style='padding-top:.45rem;font-size:.78rem;"
+                f"<div style='padding-top:.42rem;font-size:.78rem;"
                 f"color:{c['muted']};'>{'Dark' if dark else 'Light'} mode</div>",
                 unsafe_allow_html=True,
             )
@@ -37,23 +40,29 @@ def render_sidebar_branding() -> None:
             st.rerun()
 
         st.markdown(
-            f"<hr style='border:none;border-top:1px solid {c['border']};margin:.6rem 0;'>",
+            f"<hr style='border:none;border-top:1px solid {c['border']};margin:.5rem 0;'>",
             unsafe_allow_html=True,
         )
 
-        # Branding block
+    # Inject CSS after the toggle widget is registered but before page content
+    inject_theme_css()
+
+    # Branding at the bottom of sidebar (will appear below page-specific controls)
+    with st.sidebar:
+        c = C()  # re-fetch after potential theme change
         st.markdown(
-            f"<div style='font-size:.78rem;line-height:1.75;'>"
-            f"<span style='color:{c['subtext']};font-weight:600;font-size:.82rem;'>"
-            f"EarningsSense</span><br>"
+            f"<div style='position:sticky;bottom:0;font-size:.78rem;line-height:1.75;"
+            f"padding-top:.5rem;'>"
+            f"<hr style='border:none;border-top:1px solid {c['border']};margin:0 0 .5rem;'>"
+            f"<span style='color:{c['subtext']};font-weight:600;'>EarningsSense</span><br>"
             f"<span style='color:{c['muted']};'>Built by Elias Wächter</span><br>"
             f"<span style='color:{c['muted']};font-size:.72rem;'>"
             f"FinBERT · Loughran-McDonald · SEC EDGAR</span><br><br>"
             f"<a href='https://github.com/3liasss/Earnings-Sense-' "
-            f"   style='color:{c['blue']};text-decoration:none;'>GitHub</a>"
+            f"style='color:{c['blue']};text-decoration:none;'>GitHub</a>"
             f"&nbsp;·&nbsp;"
             f"<a href='https://earnings-sense.streamlit.app' "
-            f"   style='color:{c['blue']};text-decoration:none;'>Live app</a>"
+            f"style='color:{c['blue']};text-decoration:none;'>Live app</a>"
             f"</div>",
             unsafe_allow_html=True,
         )
