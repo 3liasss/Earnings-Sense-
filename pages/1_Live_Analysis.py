@@ -29,6 +29,10 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+# ── URL param pre-fill: ?ticker=NVDA auto-populates and runs ─────────────────
+
+_url_ticker = st.query_params.get("ticker", "").strip().upper()
+
 # ── Input - st.form so Enter key submits without clicking the button ──────────
 
 with st.form("analysis_form"):
@@ -36,6 +40,7 @@ with st.form("analysis_form"):
     with col_input:
         ticker_input = st.text_input(
             "Ticker",
+            value=_url_ticker,
             placeholder="NVDA, MSFT, AAPL, META...",
             label_visibility="collapsed",
         )
@@ -63,6 +68,11 @@ if source_mode == "Earnings Call Transcript (FMP)":
     )
 
 # ── Pipeline ──────────────────────────────────────────────────────────────────
+
+# Auto-trigger from URL param if user hasn't clicked yet
+if _url_ticker and not run_btn:
+    run_btn = True
+    ticker_input = _url_ticker
 
 COMMON_TYPOS = {
     "APPL": "AAPL", "GOGL": "GOOGL", "GOOG": "GOOGL",
