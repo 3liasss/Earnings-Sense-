@@ -75,10 +75,20 @@ def load_data():
 df_raw, metrics = load_data()
 
 df = df_raw.dropna(subset=["mci", "drs", "next_day_return"]).copy()
+n_dropped = len(df_raw) - len(df)
 
 if len(df) < 10:
     st.error(f"Only {len(df)} observations with price data. Need ≥10 to compute metrics.")
     st.stop()
+
+if n_dropped > 0:
+    st.caption(f"{n_dropped} of {len(df_raw)} rows dropped (missing price data) - {len(df)} used for metrics.")
+
+# Allow manual cache bust if results.csv was updated externally
+with st.sidebar:
+    if st.button("↺ Reload data", help="Invalidate cache and reload results.csv from disk"):
+        load_data.clear()
+        st.rerun()
 
 if metrics is None:
     from src.analysis.backtest_engine import compute_metrics

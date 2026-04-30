@@ -132,7 +132,7 @@ if run_btn and ticker_input:
             try:
                 filing = fetch_filing_text(ticker)
             except Exception as e:
-                st.error(f"EDGAR fetch failed: {e}")
+                st.error(f"EDGAR fetch failed: {html.escape(str(e))}")
                 st.stop()
 
         if _was_cached and _cache_age_min is not None:

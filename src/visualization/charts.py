@@ -575,7 +575,7 @@ def sector_distribution_chart(
     ))
 
     # Median line
-    med = float(_np.median(sector_vals))
+    med = float(np.median(sector_vals))
     fig.add_vline(x=med, line_dash="dot", line_color=c["amber"], line_width=1.5,
                   annotation_text=f"median {med:.1f}",
                   annotation_font={"color": c["amber"], "size": 10})

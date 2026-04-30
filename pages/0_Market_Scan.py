@@ -50,7 +50,7 @@ with st.sidebar:
     )
     tickers  = [t.strip().upper() for t in
                 st.session_state["scan_ticker_text"].replace(",", "\n").splitlines()
-                if t.strip()]
+                if t.strip() and t.strip().isalpha()]
     run_scan = st.button("Run Scan", type="primary", use_container_width=True)
 
     st.markdown(
@@ -225,8 +225,11 @@ for r in results:
     )
     c1, c2, c3, c4, c5, c6, c7, c8, c9 = st.columns([1.2, 2.5, 1, 1, 1, 1, 1, 1.2, 1.3])
     c1.markdown(f"**{r['ticker']}**")
+    _name = r['company']
+    _name_disp = (_name[:26] + "…") if len(_name) > 27 else _name
     c2.markdown(
-        f"<span style='color:{c['subtext']};font-size:.82rem;'>{r['company'][:28]}</span>",
+        f"<span style='color:{c['subtext']};font-size:.82rem;' title='{html.escape(_name)}'>"
+        f"{html.escape(_name_disp)}</span>",
         unsafe_allow_html=True,
     )
     c3.markdown(f"<span style='color:{mci_color};font-weight:700;'>{r['mci']:.0f}</span>",

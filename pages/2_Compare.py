@@ -51,7 +51,7 @@ def _run_analysis(ticker: str) -> dict | None:
     try:
         filing = fetch_filing_text(ticker)
     except Exception as e:
-        st.error(f"{ticker}: fetch failed - {e}")
+        st.error(f"{html.escape(ticker)}: fetch failed - {html.escape(str(e))}")
         return None
 
     sentiment   = analyze_sentiment(filing["text"])
