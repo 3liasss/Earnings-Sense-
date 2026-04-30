@@ -1,43 +1,59 @@
-"""Shared sidebar branding injected on every page."""
+"""Sidebar branding + theme toggle - imported by every page."""
 from __future__ import annotations
 import streamlit as st
-
-# Applied on every page to keep sidebar dark regardless of Streamlit theme
-SIDEBAR_CSS = """
-<style>
-.stSidebar, [data-testid="stSidebar"] {
-    background-color: #0f172a !important;
-}
-[data-testid="stSidebarContent"] {
-    background-color: #0f172a !important;
-}
-</style>
-"""
+from src.ui.theme import base_css, C, get_theme, set_theme
 
 
-def inject_sidebar_style() -> None:
-    st.markdown(SIDEBAR_CSS, unsafe_allow_html=True)
+def inject_theme_css() -> None:
+    st.markdown(base_css(), unsafe_allow_html=True)
 
 
 def render_sidebar_branding() -> None:
-    """Call inside (or after) your page's `with st.sidebar:` block."""
-    inject_sidebar_style()
+    """
+    Call once per page, after set_page_config.
+    Injects theme CSS and renders the bottom sidebar branding + theme toggle.
+    """
+    inject_theme_css()
+
+    c = C()
+    dark = get_theme() == "dark"
+
     with st.sidebar:
-        st.markdown("---")
+        # Theme toggle at top of sidebar
+        tcol1, tcol2 = st.columns([1, 3])
+        with tcol1:
+            toggled = st.toggle("", value=dark, key="_theme_toggle",
+                                label_visibility="collapsed",
+                                help="Toggle dark / light mode")
+        with tcol2:
+            st.markdown(
+                f"<div style='padding-top:.45rem;font-size:.78rem;"
+                f"color:{c['muted']};'>{'Dark' if dark else 'Light'} mode</div>",
+                unsafe_allow_html=True,
+            )
+
+        if toggled != dark:
+            set_theme("dark" if toggled else "light")
+            st.rerun()
+
         st.markdown(
-            """
-            <div style='font-size:.8rem;line-height:1.7;'>
-            <span style='color:#64748b;font-weight:600;'>EarningsSense</span><br>
-            <span style='color:#475569;'>Built by Elias Wächter</span><br>
-            <span style='color:#334155;font-size:.73rem;'>
-            FinBERT · Loughran-McDonald · SEC EDGAR
-            </span><br><br>
-            <a href='https://github.com/3liasss/Earnings-Sense-'
-               style='color:#3b82f6;text-decoration:none;'>GitHub</a>
-            &nbsp;·&nbsp;
-            <a href='https://earnings-sense.streamlit.app'
-               style='color:#3b82f6;text-decoration:none;'>Live app</a>
-            </div>
-            """,
+            f"<hr style='border:none;border-top:1px solid {c['border']};margin:.6rem 0;'>",
+            unsafe_allow_html=True,
+        )
+
+        # Branding block
+        st.markdown(
+            f"<div style='font-size:.78rem;line-height:1.75;'>"
+            f"<span style='color:{c['subtext']};font-weight:600;font-size:.82rem;'>"
+            f"EarningsSense</span><br>"
+            f"<span style='color:{c['muted']};'>Built by Elias Wächter</span><br>"
+            f"<span style='color:{c['muted']};font-size:.72rem;'>"
+            f"FinBERT · Loughran-McDonald · SEC EDGAR</span><br><br>"
+            f"<a href='https://github.com/3liasss/Earnings-Sense-' "
+            f"   style='color:{c['blue']};text-decoration:none;'>GitHub</a>"
+            f"&nbsp;·&nbsp;"
+            f"<a href='https://earnings-sense.streamlit.app' "
+            f"   style='color:{c['blue']};text-decoration:none;'>Live app</a>"
+            f"</div>",
             unsafe_allow_html=True,
         )
