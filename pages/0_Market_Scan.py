@@ -91,13 +91,13 @@ with st.sidebar:
             unsafe_allow_html=True,
         )
 
-# ── Auto-run on first load ────────────────────────────────────────────────────
+# ── Scan execution ───────────────────────────────────────────────────────────
 
 if "scan_results" not in st.session_state:
     st.session_state.scan_results = []
-    st.session_state.scan_done    = False
+    st.session_state.scan_errors  = []
 
-if run_scan or not st.session_state.scan_done:
+if run_scan:
     from src.data.edgar          import fetch_filing_text
     from src.analysis.sentiment  import analyze as analyze_sentiment
     from src.analysis.linguistics import extract as extract_linguistics
@@ -145,7 +145,6 @@ if run_scan or not st.session_state.scan_done:
     results.sort(key=lambda x: -x["drs"])
     st.session_state.scan_results = results
     st.session_state.scan_errors  = errors
-    st.session_state.scan_done    = True
 
 # ── Results ───────────────────────────────────────────────────────────────────
 
@@ -153,7 +152,16 @@ results = st.session_state.get("scan_results", [])
 errors  = st.session_state.get("scan_errors",  [])
 
 if not results:
-    st.info("Click **Run Scan** to start, or wait for the auto-scan to complete.")
+    st.markdown(
+        f"<div style='background:{c['surface']};border:1px solid {c['border']};"
+        f"border-radius:10px;padding:2rem;text-align:center;'>"
+        f"<div style='font-size:2rem;margin-bottom:.5rem;'>📊</div>"
+        f"<div style='color:{c['text']};font-weight:600;margin-bottom:.25rem;'>Ready to scan</div>"
+        f"<div style='color:{c['muted']};font-size:.82rem;'>"
+        f"Edit the ticker list in the sidebar, then click <strong>Run Scan</strong>.</div>"
+        f"</div>",
+        unsafe_allow_html=True,
+    )
     st.stop()
 
 # Summary row
@@ -182,10 +190,15 @@ st.markdown(f"<hr class='es-section-rule'>", unsafe_allow_html=True)
 st.markdown(f"<div class='es-label'>Results - ranked by deception risk score</div>",
             unsafe_allow_html=True)
 
+# Fetch MCI history once for all tickers (for sparklines)
+from src.db.database import get_mci_history as _get_hist
+from src.visualization.charts import sparkline as _sparkline
+_history_map = {r["ticker"]: _get_hist(r["ticker"], limit=6) for r in results}
+
 # Column header
-cols = st.columns([1.2, 2.5, 1, 1, 1, 1, 1, 1.5])
+cols = st.columns([1.2, 2.5, 1, 1, 1, 1, 1, 1.2, 1.3])
 for col, label in zip(cols, ["Ticker", "Company", "MCI", "DRS",
-                               "FB+", "Hedge", "Certainty", "Filed"]):
+                               "FB+", "Hedge", "Certainty", "MCI Trend", "Filed"]):
     col.markdown(
         f"<div style='color:{c['muted']};font-size:.68rem;font-weight:700;"
         f"text-transform:uppercase;letter-spacing:.5px;'>{label}</div>",
@@ -210,7 +223,7 @@ for r in results:
         f"margin-bottom:.1rem;'>",
         unsafe_allow_html=True,
     )
-    c1, c2, c3, c4, c5, c6, c7, c8 = st.columns([1.2, 2.5, 1, 1, 1, 1, 1, 1.5])
+    c1, c2, c3, c4, c5, c6, c7, c8, c9 = st.columns([1.2, 2.5, 1, 1, 1, 1, 1, 1.2, 1.3])
     c1.markdown(f"**{r['ticker']}**")
     c2.markdown(
         f"<span style='color:{c['subtext']};font-size:.82rem;'>{r['company'][:28]}</span>",
@@ -226,7 +239,16 @@ for r in results:
                 unsafe_allow_html=True)
     c7.markdown(f"<span style='color:{c['subtext']};'>{r['certainty']:.2f}</span>",
                 unsafe_allow_html=True)
+    # Sparkline from DB history (oldest→newest MCI)
+    _hist = _history_map.get(r["ticker"], [])
+    _mci_vals = [h["mci"] for h in reversed(_hist)] if _hist else []
+    _spark = _sparkline(_mci_vals) if len(_mci_vals) >= 2 else "─"
     c8.markdown(
+        f"<span style='color:{mci_color};font-family:monospace;letter-spacing:1px;"
+        f"font-size:.88rem;'>{_spark}</span>",
+        unsafe_allow_html=True,
+    )
+    c9.markdown(
         f"<span style='color:{c['muted']};font-size:.78rem;'>{r['filing_date']}</span>",
         unsafe_allow_html=True,
     )
