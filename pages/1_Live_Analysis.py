@@ -29,24 +29,27 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
-# ── Input ─────────────────────────────────────────────────────────────────────
+# ── Input - st.form so Enter key submits without clicking the button ──────────
 
-col_input, col_mode, col_btn = st.columns([2, 2, 1])
-with col_input:
-    ticker_input = st.text_input(
-        "Ticker",
-        placeholder="NVDA, MSFT, AAPL, META...",
-        label_visibility="collapsed",
-    )
-with col_mode:
-    source_mode = st.radio(
-        "Source",
-        ["10-Q Filing (MD&A)", "Earnings Call Transcript (FMP)"],
-        horizontal=True,
-        label_visibility="collapsed",
-    )
-with col_btn:
-    run_btn = st.button("Analyze →", type="primary", use_container_width=True)
+with st.form("analysis_form"):
+    col_input, col_mode, col_btn = st.columns([2, 2, 1])
+    with col_input:
+        ticker_input = st.text_input(
+            "Ticker",
+            placeholder="NVDA, MSFT, AAPL, META...",
+            label_visibility="collapsed",
+        )
+    with col_mode:
+        source_mode = st.radio(
+            "Source",
+            ["10-Q Filing (MD&A)", "Earnings Call Transcript (FMP)"],
+            horizontal=True,
+            label_visibility="collapsed",
+        )
+    with col_btn:
+        run_btn = st.form_submit_button(
+            "Analyze →", type="primary", use_container_width=True
+        )
 
 if source_mode == "Earnings Call Transcript (FMP)":
     st.markdown(
