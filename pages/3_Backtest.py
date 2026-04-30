@@ -186,6 +186,28 @@ if ic_series:
     )
     st.plotly_chart(fig, use_container_width=True)
 
+# ── Fama-MacBeth IC stability ─────────────────────────────────────────────────
+
+fm_beta_series = m.get("fm_beta_series", [])
+if fm_beta_series:
+    from src.visualization.charts import ic_stability_chart
+    st.markdown(
+        "<div class='section-header'>Fama-MacBeth Factor Stability</div>",
+        unsafe_allow_html=True,
+    )
+    st.markdown(
+        "<div style='color:#64748b;font-size:.78rem;margin-bottom:.6rem;'>"
+        "Quarterly Fama-MacBeth cross-sectional beta for MCI and DRS. "
+        "Stable betas near a consistent sign = durable factor. "
+        "Sign flips or high variance = noise or regime sensitivity.</div>",
+        unsafe_allow_html=True,
+    )
+    st.plotly_chart(
+        ic_stability_chart(fm_beta_series),
+        use_container_width=True,
+        config={"displayModeBar": False},
+    )
+
 st.markdown("---")
 
 # ── Section 2: Long-Short Simulation ─────────────────────────────────────────
