@@ -298,8 +298,28 @@ if run_btn and ticker_input:
 
     # ── 4 KPI cards - 2+2 layout for readability ──────────────────────────────
     delta_str = f"QoQ: {delta_mci:+.1f} pts" if delta_mci is not None else "QoQ: -"
-    ret_str   = f"{ret*100:+.2f}%" if ret is not None else "-"
-    ret_color = c["green"] if (ret or 0) >= 0 else c["red"]
+
+    # Explain why next-day return is blank on fresh filings
+    from datetime import date as _date_cls, timedelta as _td
+    _today = _date_cls.today()
+    _report_dt = None
+    try:
+        _report_dt = _date_cls.fromisoformat(report_date)
+    except Exception:
+        pass
+
+    if ret is not None:
+        ret_str   = f"{ret*100:+.2f}%"
+        ret_sub   = "Post-filing close-to-close"
+        ret_color = c["green"] if ret >= 0 else c["red"]
+    elif _report_dt and (_today - _report_dt) <= _td(days=3):
+        ret_str   = "Pending"
+        ret_sub   = "Available after next trading session"
+        ret_color = c["muted"]
+    else:
+        ret_str   = "-"
+        ret_sub   = "Price data unavailable"
+        ret_color = c["muted"]
 
     row1a, row1b = st.columns(2)
     row2a, row2b = st.columns(2)
@@ -328,7 +348,7 @@ if run_btn and ticker_input:
          "Forward-looking statement confidence", c["violet"])
     _kpi(row2b, "Next-Day Return",
          f"<span style='color:{ret_color};'>{ret_str}</span>",
-         "Post-filing close-to-close", ret_color)
+         ret_sub, ret_color)
 
     st.markdown(f"<hr class='es-section-rule'>", unsafe_allow_html=True)
 
