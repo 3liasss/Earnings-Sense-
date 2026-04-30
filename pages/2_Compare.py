@@ -103,7 +103,8 @@ if compare_btn and ticker1 and ticker2:
     if not r1 or not r2:
         st.stop()
 
-    from src.visualization.charts import confidence_gauges, sentiment_bar, linguistic_radar
+    from src.visualization.charts import (confidence_gauges, sentiment_bar,
+                                          linguistic_radar, linguistic_radar_compare)
 
     st.markdown(f"<hr class='es-section-rule'>", unsafe_allow_html=True)
 
@@ -209,18 +210,16 @@ if compare_btn and ticker1 and ticker2:
         st.plotly_chart(sentiment_bar(r2["pos"], r2["neg"], r2["neu"], r2["ticker"]),
                         use_container_width=True, config={"displayModeBar": False})
 
-    # ── Linguistic radars ─────────────────────────────────────────────────────
-    col_l, col_r = st.columns(2)
-    with col_l:
-        st.plotly_chart(
-            linguistic_radar(r1["hedge"], r1["certainty"], r1["passive"], r1["vague"]),
-            use_container_width=True, config={"displayModeBar": False},
-        )
-    with col_r:
-        st.plotly_chart(
-            linguistic_radar(r2["hedge"], r2["certainty"], r2["passive"], r2["vague"]),
-            use_container_width=True, config={"displayModeBar": False},
-        )
+    # ── Linguistic radar - dual-trace overlay ─────────────────────────────────
+    st.markdown(f"<div class='es-label'>Linguistic profile overlay</div>",
+                unsafe_allow_html=True)
+    st.plotly_chart(
+        linguistic_radar_compare(
+            r1["hedge"], r1["certainty"], r1["passive"], r1["vague"], t1,
+            r2["hedge"], r2["certainty"], r2["passive"], r2["vague"], t2,
+        ),
+        use_container_width=True, config={"displayModeBar": False},
+    )
 
     # ── Key guidance phrases ──────────────────────────────────────────────────
     st.markdown(f"<hr class='es-section-rule'>", unsafe_allow_html=True)
