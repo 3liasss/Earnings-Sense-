@@ -350,6 +350,51 @@ if run_btn and ticker_input:
          f"<span style='color:{ret_color};'>{ret_str}</span>",
          ret_sub, ret_color)
 
+    # ── Proactive signal flags ────────────────────────────────────────────────
+    _flags: list[tuple[str, str, str]] = []  # (label, pill_class, tooltip)
+
+    if drs >= 55:
+        _flags.append(("HIGH DECEPTION RISK", "pill-red", f"DRS {drs:.0f} ≥ 55"))
+    elif drs >= 35:
+        _flags.append(("ELEVATED RISK", "pill-amber", f"DRS {drs:.0f} in caution range"))
+
+    if mci <= 35:
+        _flags.append(("LOW CONFIDENCE", "pill-red", f"MCI {mci:.0f} ≤ 35"))
+
+    if delta_mci is not None and delta_mci <= -12:
+        _flags.append((f"MCI ▼{abs(delta_mci):.0f}pts QoQ", "pill-red",
+                        "Large confidence drop quarter-on-quarter"))
+    elif delta_mci is not None and delta_mci >= 12:
+        _flags.append((f"MCI ▲{delta_mci:.0f}pts QoQ", "pill-green",
+                        "Confidence improving quarter-on-quarter"))
+
+    if yoy.delta_drs is not None and yoy.delta_drs >= 10:
+        _flags.append((f"DRS ▲{yoy.delta_drs:.0f}pts QoQ", "pill-amber",
+                        "Deception risk rising quarter-on-quarter"))
+
+    sb_count = sector_bench.get("count", 0)
+    if sb_count >= 3:
+        if drs - sector_bench["avg_drs"] >= 15:
+            _flags.append(("TOP DRS IN SECTOR", "pill-red",
+                            f"DRS {drs:.0f} is {drs - sector_bench['avg_drs']:.0f}pts above sector avg"))
+        if sector_bench["avg_mci"] - mci >= 15:
+            _flags.append(("BELOW SECTOR MCI", "pill-amber",
+                            f"MCI {mci:.0f} is {sector_bench['avg_mci'] - mci:.0f}pts below sector avg"))
+
+    if linguistics.hedge_density > 2.5:
+        _flags.append(("HIGH HEDGE DENSITY", "pill-amber",
+                        f"{linguistics.hedge_density:.2f} hedges/100w"))
+
+    if _flags:
+        _pill_html = " &nbsp; ".join(
+            f"<span class='pill {pc}' title='{tt}'>{lbl}</span>"
+            for lbl, pc, tt in _flags
+        )
+        st.markdown(
+            f"<div style='margin:.3rem 0 .9rem;line-height:2;'>{_pill_html}</div>",
+            unsafe_allow_html=True,
+        )
+
     st.markdown(f"<hr class='es-section-rule'>", unsafe_allow_html=True)
 
     # ── Sector benchmark + YoY banner ─────────────────────────────────────────
