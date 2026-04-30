@@ -119,12 +119,32 @@ if run_btn and ticker_input:
 
     if source_mode == "10-Q Filing (MD&A)":
         from src.data.edgar import fetch_filing_text
-        with st.spinner(f"Fetching SEC EDGAR 10-Q for {ticker}..."):
+        from pathlib import Path as _Path
+        import time as _time
+
+        _cache_path = _Path("data/cache") / f"{ticker}_10q.json"
+        _was_cached = _cache_path.exists()
+        _cache_age_min: float | None = None
+        if _was_cached:
+            _cache_age_min = (_time.time() - _cache_path.stat().st_mtime) / 60
+
+        with st.spinner(f"{'Loading cached' if _was_cached else 'Fetching'} 10-Q for {ticker}..."):
             try:
                 filing = fetch_filing_text(ticker)
             except Exception as e:
                 st.error(f"EDGAR fetch failed: {e}")
                 st.stop()
+
+        if _was_cached and _cache_age_min is not None:
+            age_str = (f"{int(_cache_age_min)}m ago" if _cache_age_min < 60
+                       else f"{_cache_age_min/60:.1f}h ago")
+            st.caption(f"Served from local cache ({age_str}) - click **Force refresh** to re-fetch live.")
+            if st.button("Force refresh", key="force_refresh"):
+                _cache_path.unlink(missing_ok=True)
+                st.rerun()
+        else:
+            st.caption("Fetched live from SEC EDGAR.")
+
         analysis_text = filing["text"]
         report_date   = filing.get("report_date", "")
         company_name  = filing.get("company", ticker)
