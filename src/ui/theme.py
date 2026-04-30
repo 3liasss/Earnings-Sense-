@@ -118,12 +118,50 @@ def base_css() -> str:
     padding-top: 1.5rem;
     max-width: 1400px;
 }}
-h1, h2, h3 {{
-    color: {c['text']} !important;
-    letter-spacing: -0.3px;
+
+/* ── Typography hierarchy ───────────────────────────────────── */
+h1 {{
+    color:          {c['text']} !important;
+    font-size:      1.85rem !important;
+    font-weight:    800 !important;
+    letter-spacing: -0.5px !important;
+    line-height:    1.15 !important;
+}}
+h2 {{
+    color:          {c['text']} !important;
+    font-size:      1.25rem !important;
+    font-weight:    700 !important;
+    letter-spacing: -0.3px !important;
+}}
+h3 {{
+    color:          {c['subtext']} !important;
+    font-size:      1rem !important;
+    font-weight:    600 !important;
+    letter-spacing: -0.2px !important;
+}}
+h4 {{
+    color:          {c['subtext']} !important;
+    font-size:      0.9rem !important;
+    font-weight:    600 !important;
 }}
 [data-testid="stMarkdownContainer"] p {{
     color: {c['subtext']};
+    line-height: 1.6;
+}}
+
+/* ── Ticker pill ────────────────────────────────────────────── */
+.es-ticker {{
+    display:         inline-block;
+    font-family:     'SF Mono', 'Fira Mono', 'Roboto Mono', monospace;
+    font-size:       0.78rem;
+    font-weight:     700;
+    letter-spacing:  0.5px;
+    background:      {c['pill_blue']};
+    color:           {c['blue']};
+    border:          1px solid {c['border']};
+    border-radius:   5px;
+    padding:         0.1em 0.55em;
+    vertical-align:  middle;
 }}
 
 /* ── Cards ─────────────────────────────────────────────────── */

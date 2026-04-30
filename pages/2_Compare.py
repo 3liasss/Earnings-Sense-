@@ -135,17 +135,17 @@ if compare_btn and ticker1 and ticker2:
     # ── Company headers ───────────────────────────────────────────────────────
     col_l, col_r = st.columns(2)
     with col_l:
-        st.markdown(f"### {r1['ticker']}")
         st.markdown(
-            f"<div style='color:{c['muted']};font-size:.82rem;'>"
-            f"{r1['company']} · {r1['quarter']} · {r1['sector']}</div>",
+            f"<h3><span class='es-ticker'>{r1['ticker']}</span> {r1['company']}</h3>"
+            f"<div style='color:{c['muted']};font-size:.82rem;margin-top:-.5rem;'>"
+            f"{r1['quarter']} · {r1['sector']}</div>",
             unsafe_allow_html=True,
         )
     with col_r:
-        st.markdown(f"### {r2['ticker']}")
         st.markdown(
-            f"<div style='color:{c['muted']};font-size:.82rem;'>"
-            f"{r2['company']} · {r2['quarter']} · {r2['sector']}</div>",
+            f"<h3><span class='es-ticker'>{r2['ticker']}</span> {r2['company']}</h3>"
+            f"<div style='color:{c['muted']};font-size:.82rem;margin-top:-.5rem;'>"
+            f"{r2['quarter']} · {r2['sector']}</div>",
             unsafe_allow_html=True,
         )
 

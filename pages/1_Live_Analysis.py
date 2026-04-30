@@ -248,7 +248,10 @@ if run_btn and ticker_input:
     # Header + PDF export inline
     hdr1, hdr2 = st.columns([5, 1])
     with hdr1:
-        st.markdown(f"## {ticker} - {company_name}")
+        st.markdown(
+            f"## <span class='es-ticker'>{ticker}</span> {company_name}",
+            unsafe_allow_html=True,
+        )
         st.markdown(
             f"<div style='color:{c['muted']};font-size:.82rem;'>"
             f"{quarter} &nbsp;·&nbsp; {report_date} &nbsp;·&nbsp; "
