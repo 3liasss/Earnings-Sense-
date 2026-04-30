@@ -64,8 +64,33 @@ if source_mode == "Earnings Call Transcript (FMP)":
 
 # ── Pipeline ──────────────────────────────────────────────────────────────────
 
+COMMON_TYPOS = {
+    "APPL": "AAPL", "GOGL": "GOOGL", "GOOG": "GOOGL",
+    "AMZON": "AMZN", "AMAZN": "AMZN", "NFLIX": "NFLX",
+    "MSFT.": "MSFT", "NVDIA": "NVDA",
+}
+
+if run_btn and not ticker_input:
+    st.warning("Enter a ticker symbol - e.g. NVDA, MSFT, AAPL.")
+    st.stop()
+
 if run_btn and ticker_input:
-    ticker = ticker_input.strip().upper()
+    raw = ticker_input.strip().upper().replace(".", "").replace(" ", "")
+
+    # Catch obvious typos before hitting EDGAR
+    if raw in COMMON_TYPOS:
+        suggestion = COMMON_TYPOS[raw]
+        st.warning(f"Did you mean **{suggestion}**? Analyzing that instead.")
+        raw = suggestion
+
+    if not raw.isalpha() or len(raw) > 5:
+        st.error(
+            f"**{html.escape(raw)}** doesn't look like a valid US ticker. "
+            f"Tickers are 1-5 letters (e.g. NVDA, MSFT, GOOGL)."
+        )
+        st.stop()
+
+    ticker = raw
     fetched_at = datetime.now().strftime("%Y-%m-%d %H:%M UTC")
 
     from src.analysis.sentiment   import analyze as analyze_sentiment
