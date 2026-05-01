@@ -198,6 +198,7 @@ if data is None:
     try:
         from src.data.filing_calendar import get_all_upcoming
         from datetime import date as _date
+        from pathlib import Path as _Path
 
         DEFAULT_TICKERS_LAND = [
             "NVDA", "MSFT", "META", "AMZN", "GOOGL",
@@ -210,6 +211,7 @@ if data is None:
         cols_cycle = [fc1, fc2]
 
         STATUS_COLOR = {
+            "FILED":      c["green"],
             "IMMINENT":   c["red"],
             "THIS MONTH": c["amber"],
             "UPCOMING":   c["blue"],
@@ -217,12 +219,31 @@ if data is None:
         }
 
         for i, r in enumerate(upcoming):
-            col         = cols_cycle[i % 2]
-            sc          = STATUS_COLOR.get(r["status"], c["muted"])
-            days_gone   = (today - r["quarter_end"]).days if r["in_window"] else 0
-            pct_elapsed = max(0, min(100, int(days_gone / 40 * 100))) if r["in_window"] else 0
-            bar_color   = c["red"] if pct_elapsed > 75 else (c["amber"] if pct_elapsed > 40 else c["blue"])
-            window_text = f"in 40-day filing window ({pct_elapsed}% elapsed)" if r["in_window"] else ""
+            col = cols_cycle[i % 2]
+
+            # Check if we already have a cached filing for this ticker
+            _cache_path = _Path("data/cache") / f"{r['ticker']}_10q.json"
+            _already_filed = _cache_path.exists()
+
+            if _already_filed:
+                sc          = STATUS_COLOR["FILED"]
+                badge_text  = "FILED"
+                right_label = "✓ scored"
+                progress_bar = ""
+            else:
+                sc          = STATUS_COLOR.get(r["status"], c["muted"])
+                days_gone   = (today - r["quarter_end"]).days if r["in_window"] else 0
+                pct_elapsed = max(0, min(100, int(days_gone / 40 * 100))) if r["in_window"] else 0
+                bar_color   = c["red"] if pct_elapsed > 75 else (c["amber"] if pct_elapsed > 40 else c["blue"])
+                window_text = f"in 40-day window ({pct_elapsed}% elapsed)" if r["in_window"] else ""
+                badge_text  = f"due {r['filing_due'].strftime('%b %d')}{' · ' + window_text if window_text else ''}"
+                right_label = f"{r['days_to_due']}d"
+                progress_bar = (
+                    f"<div style='background:{c['border']};border-radius:2px;height:3px;margin-top:.4rem;'>"
+                    f"<div style='background:{bar_color};width:{pct_elapsed}%;height:3px;"
+                    f"border-radius:2px;'></div></div>"
+                    if r["in_window"] else ""
+                )
 
             with col:
                 st.markdown(
@@ -230,20 +251,11 @@ if data is None:
                     f"<div style='display:flex;justify-content:space-between;align-items:center;'>"
                     f"<div>"
                     f"<span style='font-weight:700;color:{c['text']};font-size:.9rem;'>{r['ticker']}</span>"
-                    f"<span style='color:{c['muted']};font-size:.72rem;margin-left:.5rem;'>"
-                    f"due {r['filing_due'].strftime('%b %d')}"
-                    f"{' - ' + window_text if window_text else ''}"
-                    f"</span>"
+                    f"<span style='color:{c['muted']};font-size:.72rem;margin-left:.5rem;'>{badge_text}</span>"
                     f"</div>"
-                    f"<span style='color:{sc};font-size:.82rem;font-weight:700;'>"
-                    f"{r['days_to_due']}d</span>"
+                    f"<span style='color:{sc};font-size:.82rem;font-weight:700;'>{right_label}</span>"
                     f"</div>"
-                    + (
-                        f"<div style='background:{c['border']};border-radius:2px;height:3px;margin-top:.4rem;'>"
-                        f"<div style='background:{bar_color};width:{pct_elapsed}%;height:3px;"
-                        f"border-radius:2px;'></div></div>"
-                        if r["in_window"] else ""
-                    )
+                    + progress_bar
                     + "</div>",
                     unsafe_allow_html=True,
                 )
