@@ -6,13 +6,13 @@
 ![Python](https://img.shields.io/badge/Python-3.11+-blue?style=flat-square)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
 
-Hedge funds pay $50k–200k/year for services like RavenPack and AlphaSense that run NLP on earnings filings before the market opens. EarningsSense replicates the core methodology using public SEC filings and open-source models — no paid data, no subscription, no gatekeeping.
+Hedge funds pay $50k–200k/year for services like RavenPack and AlphaSense that run NLP on earnings filings before the market opens. EarningsSense replicates the core methodology using public SEC filings and open-source models - no paid data, no subscription, no gatekeeping.
 
 ---
 
 ## The idea
 
-When a CFO says "we believe results may be subject to certain factors" instead of "we will hit $X", that's a signal. When management uses passive voice to avoid accountability, hedges every forward statement, and buries guidance in vague qualifiers — that pattern shows up in the language before it shows up in the stock price.
+When a CFO says "we believe results may be subject to certain factors" instead of "we will hit $X", that's a signal. When management uses passive voice to avoid accountability, hedges every forward statement, and buries guidance in vague qualifiers - that pattern shows up in the language before it shows up in the stock price.
 
 Wall Street has been quantifying this for years. Now you can too.
 
@@ -20,10 +20,10 @@ Wall Street has been quantifying this for years. Now you can too.
 
 ## Two scores. One filing. Minutes after it drops.
 
-**MCI — Management Confidence Index (0–100)**
+**MCI - Management Confidence Index (0-100)**
 How direct and confident the language sounds. Combines FinBERT sentiment with certainty ratio, hedge density, and passive voice avoidance. Higher = management is speaking with conviction.
 
-**DRS — Deception Risk Score (0–100)**
+**DRS - Deception Risk Score (0-100)**
 How evasive or hedged the language is. High DRS = lots of "may", "subject to", "we believe", passive constructions, vague qualifiers. The language of a company that knows something you don't.
 
 ```
@@ -40,7 +40,7 @@ Transcript            + Q&A split         ──▶  Q&A Session score (deflecti
 
 ---
 
-## Q3 2025 — what the scores said
+## Q3 2025 - what the scores said
 
 Filings from late October / November 2025. Next-day return is close-to-close from the earnings date.
 
@@ -54,16 +54,16 @@ Filings from late October / November 2025. Next-day return is close-to-close fro
 | TSLA  | 36.5 |  8.7 | 0.49 | +2.3% |
 | META  | 23.0 | **34.8** | **2.88** | **-11.3%** |
 
-META's DRS was 34.8 — more than 2× the next-highest. Hedge density of 2.88 per 100 words vs an average of 0.40 for the rest. Stock dropped 11.3% the next session.
+META's DRS was 34.8 - more than 2x the next-highest. Hedge density of 2.88 per 100 words vs an average of 0.40 for the rest. Stock dropped 11.3% the next session.
 
-The signal is not a crystal ball. MSFT had strong MCI and still dropped 2.9% — confident language doesn't override guidance misses. But evasive language before a miss? That pattern keeps showing up.
+The signal is not a crystal ball. MSFT had strong MCI and still dropped 2.9% - confident language doesn't override guidance misses. But evasive language before a miss? That pattern keeps showing up.
 
 ---
 
 ## What's in the app
 
 **Live Analysis**
-Score any US-listed company from its latest 10-Q the moment it hits EDGAR. Or use an earnings call transcript (Q&A scored separately — analyst questioning tends to reveal more than scripted remarks). Includes sector benchmark, QoQ trend, proactive signal flags, guidance phrase extraction, and PDF export.
+Score any US-listed company from its latest 10-Q the moment it hits EDGAR. Or use an earnings call transcript (Q&A scored separately - analyst questioning tends to reveal more than scripted remarks). Includes sector benchmark, QoQ trend, proactive signal flags, guidance phrase extraction, and PDF export.
 
 **Market Scan**
 Score and rank a full watchlist by Deception Risk Score. MCI sparklines show trend direction at a glance. Sector breakdown reveals whether risk is company-specific or sector-wide hedging.
@@ -77,10 +77,10 @@ Side-by-side NLP analysis of two tickers. Overlaid linguistic radar chart shows 
 
 | Signal | What it measures |
 |--------|-----------------|
-| Hedge density | Hedging phrases per 100 words — "we believe", "may", "subject to", "approximately" |
-| Certainty ratio | Strong affirmatives / (hedges + 1) — "will deliver", "committed", "record" |
-| Passive voice ratio | Fraction of sentences in passive voice — accountability-avoidance signal |
-| Vague language score | Vague terms per 100 words — "various", "significant", "certain ongoing challenges" |
+| Hedge density | Hedging phrases per 100 words - "we believe", "may", "subject to", "approximately" |
+| Certainty ratio | Strong affirmatives / (hedges + 1) - "will deliver", "committed", "record" |
+| Passive voice ratio | Fraction of sentences in passive voice - accountability-avoidance signal |
+| Vague language score | Vague terms per 100 words - "various", "significant", "certain ongoing challenges" |
 | FinBERT sentiment | Positive / negative / neutral from BERT fine-tuned on financial text |
 | Guidance Score | Forward-looking statement confidence based on positive vs negative guidance language |
 
@@ -120,8 +120,8 @@ This project gets regular updates. Active development.
 | Layer | Technology |
 |---|---|
 | Language model | ProsusAI/finbert (HuggingFace Transformers + PyTorch) |
-| Filing data | SEC EDGAR REST API — free, no key required |
-| Transcript data | FinancialModelingPrep API — free tier (250 req/day) |
+| Filing data | SEC EDGAR REST API - free, no key required |
+| Transcript data | FinancialModelingPrep API - free tier (250 req/day) |
 | Price data | Yahoo Finance HTTP API |
 | Dashboard | Streamlit |
 | Charts | Plotly (interactive, dark/light theme) |
@@ -141,7 +141,7 @@ streamlit run app.py
 
 First run downloads FinBERT (~440 MB) from HuggingFace. Cached after that.
 
-**Optional — earnings call transcripts and EPS data:**
+**Optional - earnings call transcripts and EPS data:**
 
 Create `.streamlit/secrets.toml`:
 ```toml
@@ -156,7 +156,7 @@ Free key at [financialmodelingprep.com](https://financialmodelingprep.com/develo
 
 - **Language is not fundamentals.** Confident language doesn't save a stock when the numbers disappoint. This is one signal, not a trading system.
 - **10-Qs are lawyered.** The MD&A section is reviewed multiple times. Transcripts tend to show rawer patterns, especially in Q&A.
-- **No real-time data.** Filings drop after market close. Same-evening signal for next-day positioning — not a pre-earnings tool.
+- **No real-time data.** Filings drop after market close. Same-evening signal for next-day positioning - not a pre-earnings tool.
 - **Sample is small.** The Q3 table covers 7 companies. Directionally interesting, not statistically conclusive on its own.
 
 ---
@@ -192,4 +192,4 @@ Free key at [financialmodelingprep.com](https://financialmodelingprep.com/develo
 
 ## License
 
-MIT — use it, fork it, build on it.
+MIT - use it, fork it, build on it.
