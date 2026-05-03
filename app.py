@@ -117,6 +117,18 @@ if data is None:
 
     st.markdown(f"<hr class='es-section-rule'>", unsafe_allow_html=True)
 
+    def _hero(col, label, value, color, note):
+        with col:
+            st.markdown(
+                f"<div class='es-card' style='text-align:center;'>"
+                f"<div class='es-label'>{label}</div>"
+                f"<div style='color:{color};font-size:2.4rem;font-weight:700;"
+                f"letter-spacing:-1px;line-height:1;margin:.25rem 0;'>{value}</div>"
+                f"<div style='color:{c['muted']};font-size:.72rem;'>{note}</div>"
+                f"</div>",
+                unsafe_allow_html=True,
+            )
+
     if recent:
         # Hero stats from the live feed
         top_drs  = max(recent, key=lambda r: r["drs"] or 0)
@@ -124,18 +136,6 @@ if data is None:
         n_scored = len(recent)
 
         h1, h2, h3 = st.columns(3)
-        def _hero(col, label, value, color, note):
-            with col:
-                st.markdown(
-                    f"<div class='es-card' style='text-align:center;'>"
-                    f"<div class='es-label'>{label}</div>"
-                    f"<div style='color:{color};font-size:2.4rem;font-weight:700;"
-                    f"letter-spacing:-1px;line-height:1;margin:.25rem 0;'>{value}</div>"
-                    f"<div style='color:{c['muted']};font-size:.72rem;'>{note}</div>"
-                    f"</div>",
-                    unsafe_allow_html=True,
-                )
-
         _hero(h1,
               f"Highest DRS · {top_drs['quarter']}",
               f"{top_drs['drs']:.0f}",
@@ -202,22 +202,11 @@ if data is None:
             st.markdown("</div>", unsafe_allow_html=True)
 
     else:
-        # Empty state — DB has no scores yet
+        # Empty state - DB has no scores yet
         h1, h2, h3 = st.columns(3)
-        def _hero(col, label, value, color, note):
-            with col:
-                st.markdown(
-                    f"<div class='es-card' style='text-align:center;'>"
-                    f"<div class='es-label'>{label}</div>"
-                    f"<div style='color:{color};font-size:2.4rem;font-weight:700;"
-                    f"letter-spacing:-1px;line-height:1;margin:.25rem 0;'>{value}</div>"
-                    f"<div style='color:{c['muted']};font-size:.72rem;'>{note}</div>"
-                    f"</div>",
-                    unsafe_allow_html=True,
-                )
-        _hero(h1, "META DRS  Q3 2025", "34.8", c["red"],   "2× next-highest · fell 11.3% next session")
+        _hero(h1, "META DRS  Q3 2025", "34.8", c["red"],   "2x next-highest · fell 11.3% next session")
         _hero(h2, "AMZN MCI  Q3 2025", "41.4", c["green"], "hedge 0.21/100w · +9.6% next session")
-        _hero(h3, "Score any ticker",  "→",     c["blue"],  "Live Analysis · results appear here")
+        _hero(h3, "Score any ticker",  "free",  c["blue"],  "Live Analysis · results appear here")
 
         st.markdown("<br>", unsafe_allow_html=True)
         st.markdown(
@@ -267,7 +256,7 @@ if data is None:
             "IMMINENT":   c["red"],
             "THIS MONTH": c["amber"],
             "UPCOMING":   c["blue"],
-            "OVERDUE":    c["muted"],
+            "OVERDUE":    c["red"],
         }
 
         for i, r in enumerate(upcoming):
@@ -288,8 +277,12 @@ if data is None:
                 pct_elapsed = max(0, min(100, int(days_gone / 40 * 100))) if r["in_window"] else 0
                 bar_color   = c["red"] if pct_elapsed > 75 else (c["amber"] if pct_elapsed > 40 else c["blue"])
                 window_text = f"in 40-day window ({pct_elapsed}% elapsed)" if r["in_window"] else ""
-                badge_text  = f"due {r['filing_due'].strftime('%b %d')}{' · ' + window_text if window_text else ''}"
-                right_label = f"{r['days_to_due']}d"
+                if r["status"] == "OVERDUE":
+                    badge_text  = f"OVERDUE · was due {r['filing_due'].strftime('%b %d')}"
+                    right_label = f"{abs(r['days_to_due'])}d late"
+                else:
+                    badge_text  = f"due {r['filing_due'].strftime('%b %d')}{' · ' + window_text if window_text else ''}"
+                    right_label = f"{r['days_to_due']}d"
                 progress_bar = (
                     f"<div style='background:{c['border']};border-radius:2px;height:3px;margin-top:.4rem;'>"
                     f"<div style='background:{bar_color};width:{pct_elapsed}%;height:3px;"
