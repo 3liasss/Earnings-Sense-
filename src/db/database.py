@@ -98,6 +98,16 @@ def get_mci_history(ticker: str, limit: int = 12) -> list[dict]:
     return [dict(r) for r in rows]
 
 
+def get_recent_scores(limit: int = 20) -> list[dict]:
+    """Return the most recently scored tickers across all users, newest first."""
+    with get_db() as db:
+        rows = db.execute(
+            "SELECT * FROM mci_history ORDER BY created_at DESC LIMIT ?",
+            (limit,)
+        ).fetchall()
+    return [dict(r) for r in rows]
+
+
 def get_watchlist() -> list[str]:
     """Return tickers in the watchlist, sorted alphabetically."""
     with get_db() as db:

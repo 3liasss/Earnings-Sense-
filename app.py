@@ -53,11 +53,6 @@ def load_sample(filename: str) -> dict | None:
 
 with st.sidebar:
     c = C()
-    st.markdown(
-        f"<hr style='border:none;border-top:1px solid {c['border']};margin:.5rem 0 .8rem;'>",
-        unsafe_allow_html=True,
-    )
-
     index = load_index()
     if index:
         st.markdown(
@@ -115,72 +110,128 @@ if data is None:
         unsafe_allow_html=True,
     )
 
-    # ── Historical reference banner ───────────────────────────────────────────
-    st.markdown(
-        f"<div style='background:{c['surface']};border:1px solid {c['border']};"
-        f"border-left:3px solid {c['blue']};border-radius:8px;"
-        f"padding:.6rem 1rem;margin-bottom:1.25rem;font-size:.8rem;color:{c['muted']};'>"
-        f"<strong style='color:{c['blue']};'>Q3 2025 Historical Reference</strong>"
-        f" - Scores below were computed from live EDGAR filings at the time of each report. "
-        f"Run <strong>Live Analysis</strong> to score any ticker against its current filing."
-        f"</div>",
-        unsafe_allow_html=True,
-    )
+    # ── Live scores feed ──────────────────────────────────────────────────────
+    from src.db.database import init_db, get_recent_scores
+    init_db()
+    recent = get_recent_scores(limit=20)
 
-    # ── 3 hero stat cards ─────────────────────────────────────────────────────
-    h1, h2, h3 = st.columns(3)
-    def _hero(col, label, value, color, note):
-        with col:
-            st.markdown(
-                f"<div class='es-card' style='text-align:center;'>"
-                f"<div class='es-label'>{label}</div>"
-                f"<div style='color:{color};font-size:2.4rem;font-weight:700;"
-                f"letter-spacing:-1px;line-height:1;margin:.25rem 0;'>{value}</div>"
-                f"<div style='color:{c['muted']};font-size:.72rem;'>{note}</div>"
-                f"</div>",
+    st.markdown(f"<hr class='es-section-rule'>", unsafe_allow_html=True)
+
+    if recent:
+        # Hero stats from the live feed
+        top_drs  = max(recent, key=lambda r: r["drs"] or 0)
+        top_mci  = max(recent, key=lambda r: r["mci"] or 0)
+        n_scored = len(recent)
+
+        h1, h2, h3 = st.columns(3)
+        def _hero(col, label, value, color, note):
+            with col:
+                st.markdown(
+                    f"<div class='es-card' style='text-align:center;'>"
+                    f"<div class='es-label'>{label}</div>"
+                    f"<div style='color:{color};font-size:2.4rem;font-weight:700;"
+                    f"letter-spacing:-1px;line-height:1;margin:.25rem 0;'>{value}</div>"
+                    f"<div style='color:{c['muted']};font-size:.72rem;'>{note}</div>"
+                    f"</div>",
+                    unsafe_allow_html=True,
+                )
+
+        _hero(h1,
+              f"Highest DRS · {top_drs['quarter']}",
+              f"{top_drs['drs']:.0f}",
+              c["red"],
+              f"{top_drs['ticker']} · hedge density {top_drs.get('hedge_density', 0):.2f}/100w")
+        _hero(h2,
+              f"Highest MCI · {top_mci['quarter']}",
+              f"{top_mci['mci']:.0f}",
+              c["green"],
+              f"{top_mci['ticker']} · certainty {top_mci.get('certainty_ratio', 0):.2f}")
+        _hero(h3,
+              "Filings scored",
+              str(n_scored),
+              c["blue"],
+              "across all tickers in this session")
+
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown(
+            f"<div class='es-label'>Latest scored filings</div>",
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            f"<div style='color:{c['muted']};font-size:.75rem;margin-bottom:.75rem;'>"
+            f"Every time you run Live Analysis or Market Scan, scores are stored here. "
+            f"Sorted by most recently scored.</div>",
+            unsafe_allow_html=True,
+        )
+
+        # Column headers
+        lh1, lh2, lh3, lh4, lh5, lh6 = st.columns([1.2, 1.5, 1, 1, 1, 1.5])
+        for col, lbl in zip([lh1, lh2, lh3, lh4, lh5, lh6],
+                             ["Ticker", "Quarter", "MCI", "DRS", "Return", "Filed"]):
+            col.markdown(
+                f"<div style='color:{c['muted']};font-size:.68rem;font-weight:700;"
+                f"text-transform:uppercase;letter-spacing:.5px;'>{lbl}</div>",
                 unsafe_allow_html=True,
             )
+        st.markdown(
+            f"<hr style='border:none;border-top:1px solid {c['border']};margin:.2rem 0 .3rem;'>",
+            unsafe_allow_html=True,
+        )
 
-    _hero(h1, "META DRS  Q3 2025", "34.8", c["red"],
-          "2× next-highest · stock fell 11.3% next session")
-    _hero(h2, "AMZN MCI  Q3 2025", "41.4", c["green"],
-          "hedge density 0.21/100w · stock +9.6% next session")
-    _hero(h3, "Q1 2026 filings due", "May 10", c["blue"],
-          "most large-cap filers · 40-day window from March 31")
+        for row in recent:
+            mci_v = row.get("mci") or 0
+            drs_v = row.get("drs") or 0
+            ret_v = row.get("next_day_return")
+            mci_color = c["green"] if mci_v >= 65 else (c["amber"] if mci_v >= 45 else c["red"])
+            drs_color = c["red"]   if drs_v >= 55 else (c["amber"] if drs_v >= 35 else c["green"])
+            border    = c["red"]   if drs_v >= 55 else (c["amber"] if drs_v >= 35 else c["green"])
+            ret_str   = f"{ret_v*100:+.1f}%" if ret_v is not None else "—"
+            ret_color = (c["green"] if ret_v and ret_v >= 0 else c["red"]) if ret_v is not None else c["muted"]
 
-    st.markdown("<br>", unsafe_allow_html=True)
+            st.markdown(
+                f"<div style='border-left:3px solid {border};padding-left:.5rem;margin-bottom:.1rem;'>",
+                unsafe_allow_html=True,
+            )
+            rc1, rc2, rc3, rc4, rc5, rc6 = st.columns([1.2, 1.5, 1, 1, 1, 1.5])
+            rc1.markdown(f"<span class='es-ticker'>{row['ticker']}</span>", unsafe_allow_html=True)
+            rc2.markdown(f"<span style='color:{c['subtext']};font-size:.82rem;'>{row.get('quarter','')}</span>", unsafe_allow_html=True)
+            rc3.markdown(f"<span style='color:{mci_color};font-weight:700;'>{mci_v:.0f}</span>", unsafe_allow_html=True)
+            rc4.markdown(f"<span style='color:{drs_color};font-weight:700;'>{drs_v:.0f}</span>", unsafe_allow_html=True)
+            rc5.markdown(f"<span style='color:{ret_color};font-size:.85rem;'>{ret_str}</span>", unsafe_allow_html=True)
+            rc6.markdown(f"<span style='color:{c['muted']};font-size:.75rem;'>{row.get('report_date','')}</span>", unsafe_allow_html=True)
+            st.markdown("</div>", unsafe_allow_html=True)
 
-    # ── Q3 2025 results table ─────────────────────────────────────────────────
-    st.markdown(
-        f"<hr class='es-section-rule'>",
-        unsafe_allow_html=True,
-    )
-    st.markdown("#### Q3 2025 - MCI / DRS from live EDGAR filings at report date")
-    st.markdown(
-        f"<div style='color:{c['muted']};font-size:.78rem;margin-bottom:.75rem;'>"
-        f"Next-day return = close-to-close from earnings date to next session. "
-        f"These scores will differ from a live run today - management tone changes quarter to quarter."
-        f"</div>",
-        unsafe_allow_html=True,
-    )
+    else:
+        # Empty state — DB has no scores yet
+        h1, h2, h3 = st.columns(3)
+        def _hero(col, label, value, color, note):
+            with col:
+                st.markdown(
+                    f"<div class='es-card' style='text-align:center;'>"
+                    f"<div class='es-label'>{label}</div>"
+                    f"<div style='color:{color};font-size:2.4rem;font-weight:700;"
+                    f"letter-spacing:-1px;line-height:1;margin:.25rem 0;'>{value}</div>"
+                    f"<div style='color:{c['muted']};font-size:.72rem;'>{note}</div>"
+                    f"</div>",
+                    unsafe_allow_html=True,
+                )
+        _hero(h1, "META DRS  Q3 2025", "34.8", c["red"],   "2× next-highest · fell 11.3% next session")
+        _hero(h2, "AMZN MCI  Q3 2025", "41.4", c["green"], "hedge 0.21/100w · +9.6% next session")
+        _hero(h3, "Score any ticker",  "→",     c["blue"],  "Live Analysis · results appear here")
 
-    import pandas as pd
-    Q3 = [
-        {"Company": "GOOGL", "MCI": 43.6, "DRS": 16.5, "Hedge/100w": 1.22, "Next-day": "+2.7%"},
-        {"Company": "MSFT",  "MCI": 42.8, "DRS":  2.2, "Hedge/100w": 0.13, "Next-day": "-2.9%"},
-        {"Company": "AMZN",  "MCI": 41.4, "DRS": 10.1, "Hedge/100w": 0.21, "Next-day": "+9.6%"},
-        {"Company": "AAPL",  "MCI": 38.9, "DRS":  6.6, "Hedge/100w": 0.06, "Next-day": "-0.4%"},
-        {"Company": "NVDA",  "MCI": 37.9, "DRS":  9.9, "Hedge/100w": 0.27, "Next-day": "-3.1%"},
-        {"Company": "TSLA",  "MCI": 36.5, "DRS":  8.7, "Hedge/100w": 0.49, "Next-day": "+2.3%"},
-        {"Company": "META",  "MCI": 23.0, "DRS": 34.8, "Hedge/100w": 2.88, "Next-day": "-11.3%"},
-    ]
-    st.dataframe(
-        pd.DataFrame(Q3).style.format(
-            {"MCI": "{:.1f}", "DRS": "{:.1f}", "Hedge/100w": "{:.2f}"}
-        ),
-        use_container_width=True,
-        hide_index=True,
-    )
+        st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown(
+            f"<div style='background:{c['surface']};border:1px solid {c['border']};"
+            f"border-left:3px solid {c['blue']};border-radius:8px;"
+            f"padding:1.25rem 1.5rem;text-align:center;'>"
+            f"<div style='font-size:1.1rem;font-weight:700;color:{c['text']};margin-bottom:.4rem;'>"
+            f"No scores yet</div>"
+            f"<div style='color:{c['muted']};font-size:.85rem;'>"
+            f"Run <strong style='color:{c['blue']};'>Live Analysis</strong> on any ticker "
+            f"and your scores will appear here automatically.</div>"
+            f"</div>",
+            unsafe_allow_html=True,
+        )
 
     # ── Filing countdown ──────────────────────────────────────────────────────
     st.markdown(
