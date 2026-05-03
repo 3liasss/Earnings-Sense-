@@ -54,16 +54,8 @@ def _10q_quarter_ends(fy_end_month: int, reference: date) -> list[date]:
 
 def next_10q(ticker: str, as_of: date | None = None) -> dict | None:
     """
-    Return the next expected 10-Q filing window for a ticker.
-
-    Returns:
-        dict with keys:
-          ticker       - ticker symbol
-          quarter_end  - date: last day of the filing quarter
-          filing_due   - date: SEC deadline (quarter_end + 40 days)
-          days_to_due  - int: days until filing deadline from as_of
-          in_window    - bool: quarter already ended but filing not yet due
-          status       - str: "IMMINENT" | "THIS MONTH" | "UPCOMING" | "OVERDUE"
+    Return the most relevant 10-Q filing window for a ticker.
+    Priority: in-window > recently overdue (within 60 days) > next upcoming.
     """
     if as_of is None:
         as_of = date.today()
@@ -76,15 +68,29 @@ def next_10q(ticker: str, as_of: date | None = None) -> dict | None:
         (qe, qe + timedelta(days=FILING_DEADLINE_DAYS))
         for qe in _10q_quarter_ends(fy_end, as_of)
     ]
-    # Keep only future or active (due date not yet passed)
-    future = [(qe, due) for qe, due in candidates if due >= as_of]
-    if not future:
-        return None
 
-    qe, due = future[0]
+    # 1. Prefer an active in-window filing (quarter ended, deadline not yet passed)
+    in_window = [(qe, due) for qe, due in candidates if qe <= as_of and due >= as_of]
+    if in_window:
+        qe, due = in_window[0]
+    else:
+        # 2. Show recently overdue (within 60 days) rather than jumping to next quarter
+        recently_overdue = sorted(
+            [(qe, due) for qe, due in candidates if due < as_of and (as_of - due).days <= 60],
+            key=lambda x: x[1], reverse=True,
+        )
+        if recently_overdue:
+            qe, due = recently_overdue[0]
+        else:
+            # 3. Fall back to next upcoming
+            upcoming = [(qe, due) for qe, due in candidates if due > as_of]
+            if not upcoming:
+                return None
+            qe, due = upcoming[0]
+
     days_to_due = (due - as_of).days
 
-    if days_to_due <= 0:
+    if days_to_due < 0:
         status = "OVERDUE"
     elif days_to_due <= 7:
         status = "IMMINENT"
@@ -98,7 +104,7 @@ def next_10q(ticker: str, as_of: date | None = None) -> dict | None:
         "quarter_end": qe,
         "filing_due":  due,
         "days_to_due": days_to_due,
-        "in_window":   qe <= as_of,
+        "in_window":   qe <= as_of <= due,
         "status":      status,
     }
 
