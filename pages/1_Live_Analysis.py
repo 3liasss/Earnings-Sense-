@@ -24,8 +24,9 @@ c = C()
 st.title("Live Analysis")
 st.markdown(
     f"<div style='color:{c['subtext']};margin-bottom:1.25rem;'>"
-    f"Score any publicly traded US company from its latest SEC 10-Q filing "
-    f"or earnings call transcript. Always fetches live from source.</div>",
+    f"Enter any US ticker. Pulls the latest filing live from SEC EDGAR, runs FinBERT "
+    f"and Loughran-McDonald, and scores management language in seconds. "
+    f"No Bloomberg terminal. No subscription.</div>",
     unsafe_allow_html=True,
 )
 

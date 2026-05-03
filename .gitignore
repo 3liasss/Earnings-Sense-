@@ -8,9 +8,10 @@ dist/
 build/
 .DS_Store
 
-# Data cache — contains fetched filings, don't commit
+# Data — contains fetched filings and run artifacts, don't commit
 data/cache/
 data/samples/
+data/backtest/
 
 # Database
 *.db

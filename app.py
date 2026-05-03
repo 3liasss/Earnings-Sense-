@@ -82,16 +82,15 @@ with st.sidebar:
         unsafe_allow_html=True,
     )
     st.markdown(f"""
-    <div style='font-size:.78rem;color:{c['subtext']};line-height:1.7;'>
-    <strong style='color:{c['subtext']};'>About EarningsSense</strong><br>
-    Institutional-grade earnings intelligence - free and open-source.
-    Built by Elias Wächter.<br><br>
-    <strong>Models</strong><br>
-    <a href='https://arxiv.org/abs/1908.10063' style='color:{c['blue']};'>FinBERT</a>
-    (Araci 2019) ·
+    <div style='font-size:.78rem;color:{c['subtext']};line-height:1.75;'>
+    <strong style='color:{c['text']};'>What hedge funds pay for. Free.</strong><br>
+    NLP on SEC 10-Q filings — the same methodology as RavenPack and AlphaSense,
+    built open-source by <strong>Elias Wächter</strong>.<br><br>
+    <strong style='color:{c['subtext']};'>Models</strong><br>
+    <a href='https://arxiv.org/abs/1908.10063' style='color:{c['blue']};'>FinBERT</a> ·
     <a href='https://sraf.nd.edu/loughranmcdonald-master-dictionary/'
-       style='color:{c['blue']};'>Loughran-McDonald</a><br>
-    Hedge language (Li 2010)
+       style='color:{c['blue']};'>Loughran-McDonald</a> ·
+    Li (2010) hedge language
     </div>
     """, unsafe_allow_html=True)
 
@@ -109,7 +108,9 @@ if data is None:
     st.markdown("## EarningsSense")
     st.markdown(
         f"<div style='color:{c['subtext']};margin-bottom:1.5rem;font-size:1rem;'>"
-        f"FinBERT + Loughran-McDonald NLP on SEC 10-Q filings. "
+        f"Hedge funds pay <strong style='color:{c['text']};'>$50k–200k/year</strong> "
+        f"for NLP on earnings filings. This does the same thing — "
+        f"<strong style='color:{c['green']};'>free and open-source.</strong> "
         f"Built by <strong>Elias Wächter</strong>.</div>",
         unsafe_allow_html=True,
     )

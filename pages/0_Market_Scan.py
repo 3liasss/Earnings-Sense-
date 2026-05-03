@@ -23,8 +23,8 @@ c = C()
 st.title("Market Scan")
 st.markdown(
     f"<div style='color:{c['subtext']};margin-bottom:1.25rem;'>"
-    f"Fetches the latest 10-Q for each ticker from SEC EDGAR and scores it. "
-    f"Ranked by Deception Risk Score - highest risk at top.</div>",
+    f"Score your entire watchlist in one pass — highest deception risk at the top. "
+    f"The same NLP hedge funds run on earnings filings, for free.</div>",
     unsafe_allow_html=True,
 )
 
